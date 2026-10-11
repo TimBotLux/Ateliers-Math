@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thèmes du jardin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#1E2B2F; --soft:#4A5A5E; --bg:#EEF4F1; --border:#D3E0DA; --green:#2E7D5B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: Nunito, system-ui, sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 16px 48px; }
+  h1 { font-family: Fredoka, sans-serif; font-weight: 600; font-size: 32px; margin: 0 0 6px; }
+  .lead { margin: 0 0 20px; font-weight: 700; color: var(--soft); max-width: 720px; line-height: 1.45; }
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .tab { height: 48px; padding: 0 20px; border-radius: 24px; border: 2px solid var(--border); background: #fff;
+         font: 800 16px Nunito, sans-serif; color: var(--ink); cursor: pointer; }
+  .tab[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .tab--age { height: 40px; font-size: 14px; }
+  .tab--age[aria-selected="true"] { background: var(--green); border-color: var(--green); }
+  .zone-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .zone-head h2 { font-family: Fredoka, sans-serif; font-weight: 600; font-size: 24px; margin: 0; }
+  .zone-head p { margin: 2px 0 0; color: var(--soft); font-weight: 700; font-size: 15px; }
+  .play { height: 48px; padding: 0 22px; border-radius: 24px; border: none; background: var(--green); color: #fff;
+          font: 600 18px Fredoka, sans-serif; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 440px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: #fff; border-radius: 26px; padding: 10px 10px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .card svg { width: 100%; height: auto; border-radius: 18px; display: block; }
+  .card .label { display: flex; justify-content: space-between; align-items: baseline; padding: 0 6px; gap: 8px; }
+  .card .label strong { font-family: Fredoka, sans-serif; font-weight: 600; font-size: 18px; }
+  .card .label span { font-size: 13px; font-weight: 800; color: var(--soft); white-space: nowrap; }
+  .card .new { font-size: 14px; font-weight: 700; color: var(--soft); padding: 0 6px; }
+
+  .demo { display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; margin-top: 34px; }
+  @media (max-width: 760px) { .demo { grid-template-columns: 1fr; } }
+  .phone { background: var(--bg); border: 10px solid #1E2B2F; border-radius: 40px; padding: 18px 12px; }
+  .phone h3 { font-family: Fredoka, sans-serif; font-weight: 600; font-size: 24px; margin: 4px 6px 12px; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tile { border-radius: 20px; overflow: hidden; background: #fff; }
+  .tile svg { width: 100%; height: auto; display: block; }
+  .tile span { display: block; text-align: center; font-weight: 800; font-size: 13px; padding: 4px 0 6px; }
+  .tile.ghost { opacity: .35; }
+  .notes { background: #fff; border-radius: 22px; padding: 18px 20px; line-height: 1.5; font-weight: 600; }
+  .notes h3 { font-family: Fredoka, sans-serif; font-weight: 600; font-size: 20px; margin: 0 0 8px; }
+  .notes ul { margin: 0; padding-left: 20px; }
+  .notes li { margin-bottom: 6px; }
+
+  /* Pose d'un autocollant */
+  .pop { transform-box: fill-box; transform-origin: center bottom; animation: pop .7s cubic-bezier(.3,1.6,.5,1) both; }
+  @keyframes pop { 0% { transform: scale(0) rotate(-12deg); opacity: 0; } 60% { opacity: 1; } 100% { transform: none; } }
+  .float { animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  .smoke { animation: smoke 2.4s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes smoke { 0% { opacity: .9; transform: translateY(0) scale(.8); } 100% { opacity: 0; transform: translateY(-16px) scale(1.4); } }
+  @media (prefers-reduced-motion: reduce) { .pop, .float, .smoke { animation: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Maquette — thèmes du jardin</h1>
+  <p class="lead">Une seule zone (la logique) dessinée dans les deux univers, avec ses 6 stades. À chaque stade, un nouvel autocollant vient se poser. Le moteur du jardin reste le même : seul le dessin change selon le thème choisi par l'enfant et selon son âge (style autocollant pour les 4-6 ans, illustration plus moderne pour les 7-9 ans).</p>
+
+  <div class="tabs" role="tablist" aria-label="Thème">
+    <button class="tab" role="tab" data-theme="fees" aria-selected="true">🧚 Fées et lutins</button>
+    <button class="tab" role="tab" data-theme="gare" aria-selected="false">🚂 Gare et trains</button>
+  </div>
+  <div class="tabs" role="tablist" aria-label="Âge">
+    <button class="tab tab--age" role="tab" data-age="4-6" aria-selected="true">4-6 ans · autocollants</button>
+    <button class="tab tab--age" role="tab" data-age="7-9" aria-selected="false">7-9 ans · plus moderne</button>
+  </div>
+
+  <div class="zone-head">
+    <div>
+      <h2 id="zone-title"></h2>
+      <p id="zone-sub"></p>
+    </div>
+    <button class="play" id="play">▶ Voir grandir</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="demo">
+    <div class="phone" aria-label="Aperçu de l'écran">
+      <h3 id="phone-title"></h3>
+      <div class="tiles" id="tiles"></div>
+    </div>
+    <div class="notes">
+      <h3>Ce qu'il faut regarder</h3>
+      <ul>
+        <li><strong>Le style autocollant</strong> : contour blanc épais et petite ombre, comme un autocollant posé sur la page.</li>
+        <li><strong>La lisibilité à petite taille</strong> : à gauche, la zone telle qu'elle apparaîtrait dans l'écran « Mon jardin ». Les autres zones, grisées, ne sont pas encore dessinées.</li>
+        <li><strong>La progression</strong> : chaque stade ajoute quelque chose de nouveau, sans jamais afficher de chiffre.</li>
+        <li><strong>Le bouton « Voir grandir »</strong> montre l'animation que l'enfant verrait en franchissant un stade.</li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="sticker" x="-25%" y="-25%" width="150%" height="150%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="3" result="dil"/>
+      <feFlood flood-color="#ffffff" result="white"/>
+      <feComposite in="white" in2="dil" operator="in" result="outline"/>
+      <feGaussianBlur in="dil" stdDeviation="1.6" result="blur"/>
+      <feOffset in="blur" dy="2.4" result="off"/>
+      <feFlood flood-color="#3B2A1A" flood-opacity="0.25"/>
+      <feComposite in2="off" operator="in" result="shadow"/>
+      <feMerge><feMergeNode in="shadow"/><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="sky-fees" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FB9CF"/><stop offset=".55" stop-color="#CBE2CF"/><stop offset="1" stop-color="#F2DC9C"/></linearGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3"/></filter>
+    <filter id="flat" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="2" stdDeviation="1.4" flood-color="#000" flood-opacity=".28"/></filter>
+    <linearGradient id="sky-fees79" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#102A3A"/><stop offset=".6" stop-color="#1F4E5A"/><stop offset="1" stop-color="#4F7F6E"/></linearGradient>
+    <linearGradient id="sky-gare79" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C7DDEC"/><stop offset="1" stop-color="#EEF4F7"/></linearGradient>
+    <linearGradient id="sky-gare" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#DCEBF8"/><stop offset="1" stop-color="#F4F9FD"/></linearGradient>
+  </defs>
+</svg>
+
+<script>
+// ---------- Petits éléments réutilisables ----------
+const S = (inner, cls = '') => `<g filter="url(#sticker)" class="${cls}">${inner}</g>`;
+// Halo lumineux (lanternes, fée, lucioles).
+const glow = (x, y, r, c) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" opacity=".75" filter="url(#glow)"/>`;
+
+// Fée des bois : ailes de libellule translucides, robe feuille, cheveux châtains.
+const fairy = (x, y, dress = '#4E9A5B', hair = '#7A4A26') => `
+  <g transform="translate(${x} ${y})">
+    <ellipse cx="-10" cy="-4" rx="11" ry="5" fill="#E6F6F2" opacity=".85" transform="rotate(-35 -10 -4)"/>
+    <ellipse cx="10" cy="-4" rx="11" ry="5" fill="#E6F6F2" opacity=".85" transform="rotate(35 10 -4)"/>
+    <ellipse cx="-8" cy="4" rx="7" ry="3.5" fill="#E6F6F2" opacity=".85" transform="rotate(25 -8 4)"/>
+    <ellipse cx="8" cy="4" rx="7" ry="3.5" fill="#E6F6F2" opacity=".85" transform="rotate(-25 8 4)"/>
+    <path d="M-3 -2 L-17 -10 M3 -2 L17 -10" stroke="#9CC9C2" stroke-width=".8"/>
+    <path d="M-6 15 L-4 10 L-2 14 L0 9 L2 14 L4 10 L6 15 L3 0 H-3 Z" fill="${dress}"/>
+    <circle cx="0" cy="-5" r="5.5" fill="#EFC7A6"/>
+    <path d="M-6 -4 Q-7 -12 0 -12 Q7 -12 6 -4 Q4 -9 0 -9 Q-4 -9 -6 -4Z" fill="${hair}"/>
+    <path d="M7 4 L13 -4" stroke="#C99A3B" stroke-width="1.6" stroke-linecap="round"/>
+    <circle cx="13.5" cy="-4.5" r="2" fill="#FFD36B"/>
+  </g>`;
+
+// Lutin : bonnet de mousse, tunique de cuir, ceinture.
+const elf = (x, y) => `
+  <g transform="translate(${x} ${y})">
+    <rect x="-5" y="2" width="10" height="12" rx="3" fill="#7A5332"/>
+    <rect x="-5" y="7" width="10" height="2" fill="#4A321E"/>
+    <circle cx="0" cy="-2" r="5" fill="#EFC7A6"/>
+    <path d="M-6 -3 Q-2 -14 6 -18 Q3 -10 6 -3 Z" fill="#4E7D3A"/>
+    <path d="M-6 -1 l-3 -2 M6 -1 l3 -2" stroke="#EFC7A6" stroke-width="2" stroke-linecap="round"/>
+  </g>`;
+
+// Fleur des champs : pâquerette (blanc) ou bouton d'or (jaune).
+const flower = (x, y, c) => `
+  <g transform="translate(${x} ${y})">
+    <path d="M0 0 Q1 -7 0 -14" stroke="#4E8A3A" stroke-width="2" fill="none"/>
+    <ellipse cx="-4" cy="-6" rx="3.5" ry="1.6" fill="#5E9A45" transform="rotate(-30 -4 -6)"/>
+    ${(c === '#FFFFFF' ? [0, 40, 80, 120, 160, 200, 240, 280, 320] : [0, 72, 144, 216, 288]).map(a => `<ellipse cx="0" cy="-19" rx="${c === '#FFFFFF' ? 1.8 : 3}" ry="5" fill="${c}" transform="rotate(${a} 0 -14)"/>`).join('')}
+    <circle cx="0" cy="-14" r="2.4" fill="${c === '#FFFFFF' ? '#F2C531' : '#D9A21E'}"/>
+  </g>`;
+
+const bluebell = (x, y) => `
+  <g transform="translate(${x} ${y})">
+    <path d="M0 0 Q-2 -14 6 -20" stroke="#4E8A3A" stroke-width="2" fill="none"/>
+    <path d="M3 -16 q2 6 -2 7 q-3 -3 2 -7z M6 -20 q3 5 0 7 q-3 -2 0 -7z" fill="#5468C9"/>
+  </g>`;
+
+const fern = (x, y, flip = 1) => `
+  <g transform="translate(${x} ${y}) scale(${flip} 1)">
+    <path d="M0 0 Q4 -16 16 -26" stroke="#3F7A34" stroke-width="2" fill="none"/>
+    ${[0.2, 0.35, 0.5, 0.65, 0.8].map((t, i) => {
+      const px = 16 * t * t + 8 * t * (1 - t), py = -26 * t * t - 32 * t * (1 - t);
+      const s = 1 - t * .5;
+      return `<ellipse cx="${px - 4 * s}" cy="${py - 2}" rx="${5 * s}" ry="${2 * s}" fill="#5E9A45" transform="rotate(-50 ${px} ${py})"/><ellipse cx="${px + 3 * s}" cy="${py + 2}" rx="${5 * s}" ry="${2 * s}" fill="#4E8A3A" transform="rotate(20 ${px} ${py})"/>`;
+    }).join('')}
+  </g>`;
+
+// Touffe d'herbe, dessinée sans contour (fait partie du décor).
+const tuft = (x, y) => `<path transform="translate(${x} ${y})" d="M-8 0 Q-7 -8 -4 -11 Q-5 -5 -2 0 Q-1 -10 2 -13 Q1 -6 3 0 Q5 -8 9 -10 Q6 -4 7 0Z" fill="#3F7A34"/>`;
+
+const snail = (x, y) => `
+  <g transform="translate(${x} ${y})">
+    <path d="M-10 0 H8 Q12 0 12 -4 L12 -7" stroke="#C9B48E" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <path d="M12 -7 l-1 -4 M12 -7 l2 -4" stroke="#C9B48E" stroke-width="1.2"/>
+    <circle cx="-1" cy="-6" r="7" fill="#A86B3A"/>
+    <path d="M-1 -6 m-4 0 a4 4 0 1 1 4 4 a2.5 2.5 0 1 1 -2 -3" stroke="#6E4325" stroke-width="1.3" fill="none"/>
+  </g>`;
+
+const sparkle = (x, y, s = 1, c = '#FFE34D') =>
+  `<path transform="translate(${x} ${y}) scale(${s})" d="M0 -6 L1.5 -1.5 L6 0 L1.5 1.5 L0 6 L-1.5 1.5 L-6 0 L-1.5 -1.5Z" fill="${c}"/>`;
+
+const butterfly = (x, y, c = '#E8892F') => `
+  <g transform="translate(${x} ${y})">
+    <ellipse cx="-4" cy="-2" rx="4" ry="5" fill="${c}" transform="rotate(-25 -4 -2)"/>
+    <ellipse cx="4" cy="-2" rx="4" ry="5" fill="${c}" transform="rotate(25 4 -2)"/>
+    <rect x="-1" y="-6" width="2" height="10" rx="1" fill="#1E2B2F"/>
+  </g>`;
+
+// ---------- Thème Fées et lutins : zone Logique ----------
+const FEES = {
+  title: 'Fées et lutins — la logique',
+  sub: 'La maison-champignon du lutin',
+  phone: 'Mon jardin',
+  bg: `
+    <rect width="200" height="170" fill="url(#sky-fees)"/>
+    <path d="M-10 0 L40 0 L120 170 L60 170Z M70 0 L95 0 L170 170 L140 170Z" fill="#FFF6D6" opacity=".18"/>
+    <g fill="#5C8A63" opacity=".75">
+      ${[[8, 92, 18], [30, 86, 22], [56, 94, 16], [150, 88, 20], [176, 82, 24], [198, 92, 16]].map(([x, y, r]) => `<rect x="${x - 2}" y="${y}" width="4" height="22" fill="#4A6B4C"/><circle cx="${x}" cy="${y}" r="${r}"/><circle cx="${x - r * .5}" cy="${y + r * .4}" r="${r * .7}"/>`).join('')}
+    </g>
+    <path d="M0 112 Q40 100 90 108 T200 102 V170 H0Z" fill="#8DBF5E"/>
+    <path d="M0 126 Q50 114 100 121 T200 117 V170 H0Z" fill="#6EA548"/>
+    <path d="M0 144 Q60 134 120 141 T200 139 V170 H0Z" fill="#558C39"/>
+    ${[12, 46, 150, 188].map(x => `<path d="M${x} 170 l2 -9 l1 9 l2 -7 l1 7" stroke="#3F7A34" stroke-width="1.5" fill="none"/>`).join('')}`,
+  stages: [
+    { name: 'une graine', what: 'Une graine magique qui scintille' },
+    { name: 'une pousse', what: 'Un petit champignon pointe le bout de son chapeau' },
+    { name: 'une jeune plante', what: 'Le champignon devient une maison, avec porte et fenêtre' },
+    { name: 'un bouton', what: 'Fougères, fleurs des champs, un escargot et un chemin de cailloux' },
+    { name: 'une fleur', what: 'Une fée des bois arrive, les lanternes s’allument' },
+    { name: 'un arbre', what: 'Le lutin habite là : cheminée de pierre, papillons, lucioles' },
+  ],
+  stickers: [
+    // Graine : un gland qui germe, deux petites feuilles, posé sur la mousse.
+    { from: 0, to: 0, svg: glow(100, 120, 22, '#FFE7A0') + tuft(74, 144) + tuft(128, 145) + S(`<g transform="translate(100 141) scale(1.45) translate(-100 -141)">
+        <ellipse cx="100" cy="141" rx="20" ry="5.5" fill="#5E8A3A"/>
+        <ellipse cx="100" cy="132" rx="8.5" ry="10" fill="#C98A45"/>
+        <ellipse cx="97" cy="130" rx="2.5" ry="5" fill="#E2AE6A" opacity=".8"/>
+        <path d="M100 141.5 l-1.6 2.5 h3.2z" fill="#8A5A2B"/>
+        <path d="M90.5 126 Q100 116 109.5 126 Q100 129 90.5 126Z" fill="#7A5332"/>
+        ${[[94, 124], [98, 122], [102, 122], [106, 124], [96, 126.5], [100, 125.5], [104, 126.5]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r=".9" fill="#5E3E24"/>`).join('')}
+        <path d="M100 119 Q100 112 103 108" stroke="#5E9A45" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <path d="M103 108 Q110 103 115 107 Q109 112 103 108Z" fill="#6FB04E"/>
+        <path d="M102 110 Q95 104 90 108 Q96 113 102 110Z" fill="#5E9A45"/></g>`) + sparkle(124, 92, .9) + sparkle(76, 108, .6) },
+    { from: 1, to: 1, svg: S(`<path d="M95 138 Q94 124 96 116 H104 Q106 124 105 138 Z" fill="#F1E7D2"/><path d="M80 120 Q100 92 120 120 Q100 124 80 120 Z" fill="#C8352B"/><circle cx="93" cy="110" r="2.6" fill="#fff"/><circle cx="105" cy="107" r="2.2" fill="#fff"/><circle cx="111" cy="115" r="1.8" fill="#fff"/>`) + tuft(72, 142) + tuft(130, 143) + sparkle(126, 100, .7) },
+    { from: 2, svg: S(`
+        <path d="M82 140 Q80 100 88 92 H112 Q120 100 118 140 Z" fill="#F1E7D2"/>
+        <path d="M108 94 Q118 104 118 140 H110 Q112 110 106 94Z" fill="#DDD0B4"/>
+        <path d="M93 140 V122 a7 7 0 0 1 14 0 V140 Z" fill="#7A4A26"/>
+        <path d="M97.5 140 V118 M102.5 140 V117" stroke="#5E3820" stroke-width="1"/>
+        <circle cx="104.5" cy="131" r="1.4" fill="#D9A21E"/>
+        ${glow(111, 113, 7, '#FFD36B')}
+        <circle cx="111" cy="113" r="4.5" fill="#FFD877" stroke="#5E3820" stroke-width="2"/>
+        <ellipse cx="100" cy="97" rx="40" ry="6" fill="#E6D9BF"/>
+        <path d="M54 96 Q100 30 146 96 Q100 104 54 96 Z" fill="#C8352B"/>
+        <path d="M54 96 Q100 104 146 96 Q100 100 54 96Z" fill="#9F2820"/>
+        <ellipse cx="78" cy="80" rx="6" ry="4.5" fill="#F7F1E6"/><ellipse cx="100" cy="62" rx="7" ry="5" fill="#F7F1E6"/>
+        <ellipse cx="122" cy="78" rx="5.5" ry="4" fill="#F7F1E6"/><ellipse cx="94" cy="88" rx="3.5" ry="2.6" fill="#F7F1E6"/><ellipse cx="134" cy="90" rx="3" ry="2.2" fill="#F7F1E6"/>
+        <ellipse cx="66" cy="90" rx="2.8" ry="2" fill="#F7F1E6"/>`) },
+    { from: 3, svg: fern(24, 152) + fern(182, 154, -1) + tuft(60, 160) + tuft(146, 162) + S(flower(54, 148, '#FFFFFF')) + S(flower(150, 146, '#F2C531')) + S(bluebell(40, 156)) + S(bluebell(166, 158)) + S(flower(134, 162, '#FFFFFF')) + S(`<ellipse cx="100" cy="150" rx="7" ry="3.5" fill="#B8B1A2"/><ellipse cx="110" cy="158" rx="6" ry="3" fill="#A59E8F"/><ellipse cx="97" cy="164" rx="7" ry="3.2" fill="#B8B1A2"/>`) + S(snail(70, 162)) },
+    { from: 4, svg: [[70, 97], [85, 99.5], [100, 101], [115, 99.5], [130, 97]].map(([x, y]) => glow(x, y, 6, '#FFC94D')).join('') + S(`<path d="M60 92 Q100 108 140 92" stroke="#5E3820" stroke-width="1.2" fill="none"/>${[[70, 97], [85, 99.5], [100, 101], [115, 99.5], [130, 97]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.2" fill="#FFD36B"/>`).join('')}`) + `<g class="float">${glow(160, 52, 14, '#FFF3C4')}${S(fairy(160, 52))}</g>` + glow(30, 104, 3.5, '#FFE08A') + glow(176, 122, 3.5, '#FFE08A') + glow(48, 70, 3, '#FFE08A') },
+    { from: 5, svg: S(`<path d="M114 68 V54 h9 V68 Z" fill="#8C877C"/><path d="M114 58 h9 M114 63 h9 M118 54 v4 M117 63 v5" stroke="#6E6A61" stroke-width=".8"/><rect x="112" y="51" width="13" height="4" rx="1.5" fill="#6E6A61"/>`) + `<circle class="smoke" cx="119" cy="45" r="5" fill="#F4F1EA" opacity=".85"/><circle class="smoke" style="animation-delay:1.2s" cx="122" cy="38" r="4" fill="#F4F1EA" opacity=".85"/>` + S(elf(76, 128)) + S(butterfly(36, 66, '#3F7FD1') + butterfly(180, 96, '#E07A1F')) + [[24, 40], [62, 24], [178, 30], [146, 128], [20, 124]].map(([x, y]) => glow(x, y, 3.5, '#FFE08A') + `<circle cx="${x}" cy="${y}" r="1.4" fill="#FFF6C8"/>`).join('') + sparkle(140, 20, .8) },
+  ],
+};
+
+// ---------- Thème Gare et trains : zone Logique (les aiguillages) ----------
+const sleepers = (x1, x2, y) => {
+  let s = '';
+  for (let x = x1; x <= x2; x += 11) s += `<rect x="${x}" y="${y - 6}" width="5" height="16" rx="1.5" fill="#9C7A55"/>`;
+  return s;
+};
+// Traverses le long de la voie qui bifurque (courbe de Bézier quadratique).
+const branchSleepers = () => {
+  const P = [[100, 137], [144, 135], [200, 105]];
+  let s = '';
+  for (let t = 0.12; t <= 1.0; t += 0.1) {
+    const x = (1 - t) ** 2 * P[0][0] + 2 * (1 - t) * t * P[1][0] + t * t * P[2][0];
+    const y = (1 - t) ** 2 * P[0][1] + 2 * (1 - t) * t * P[1][1] + t * t * P[2][1];
+    const dx = 2 * (1 - t) * (P[1][0] - P[0][0]) + 2 * t * (P[2][0] - P[1][0]);
+    const dy = 2 * (1 - t) * (P[1][1] - P[0][1]) + 2 * t * (P[2][1] - P[1][1]);
+    const a = (Math.atan2(dy, dx) * 180) / Math.PI;
+    s += `<rect x="${x - 2.5}" y="${y - 8}" width="5" height="16" rx="1.5" fill="#9C7A55" transform="rotate(${a} ${x} ${y})"/>`;
+  }
+  return s;
+};
+const rails = (x1, x2, y) => `<rect x="${x1}" y="${y - 3}" width="${x2 - x1}" height="2.6" rx="1.3" fill="#7D8A92"/><rect x="${x1}" y="${y + 5}" width="${x2 - x1}" height="2.6" rx="1.3" fill="#7D8A92"/>`;
+
+const loco = (x, y) => `
+  <g transform="translate(${x} ${y})">
+    <rect x="0" y="-26" width="34" height="20" rx="4" fill="#D9617A"/>
+    <rect x="22" y="-40" width="18" height="34" rx="3" fill="#A8364F"/>
+    <rect x="26" y="-36" width="10" height="9" rx="2" fill="#BFE0F5"/>
+    <rect x="-6" y="-8" width="50" height="6" rx="2" fill="#1E2B2F"/>
+    <rect x="6" y="-38" width="7" height="12" rx="1.5" fill="#1E2B2F"/>
+    <path d="M-6 -6 L-12 2 H-4Z" fill="#1E2B2F"/>
+    <circle cx="6" cy="0" r="6" fill="#1E2B2F"/><circle cx="6" cy="0" r="2" fill="#F2B84B"/>
+    <circle cx="20" cy="0" r="6" fill="#1E2B2F"/><circle cx="20" cy="0" r="2" fill="#F2B84B"/>
+    <circle cx="34" cy="0" r="6" fill="#1E2B2F"/><circle cx="34" cy="0" r="2" fill="#F2B84B"/>
+    <circle cx="-2" cy="-18" r="3" fill="#F2B84B"/>
+  </g>`;
+const wagon = (x, y, c, load = '') => `
+  <g transform="translate(${x} ${y})">
+    <rect x="0" y="-22" width="30" height="16" rx="3" fill="${c}"/>
+    ${load}
+    <rect x="-2" y="-8" width="34" height="5" rx="2" fill="#1E2B2F"/>
+    <circle cx="7" cy="0" r="5" fill="#1E2B2F"/><circle cx="23" cy="0" r="5" fill="#1E2B2F"/>
+    <rect x="30" y="-12" width="6" height="2.5" fill="#1E2B2F"/>
+  </g>`;
+
+const GARE = {
+  title: 'Gare et trains — la logique',
+  sub: 'Les aiguillages : la voie se sépare en deux',
+  phone: 'Ma gare',
+  bg: `
+    <rect width="200" height="170" fill="url(#sky-gare)"/>
+    <circle cx="170" cy="30" r="14" fill="#F2B84B" opacity=".85"/>
+    <path d="M0 112 Q60 104 120 110 T200 106 V170 H0Z" fill="#CFE7B8"/>
+    <path d="M0 150 H200 V170 H0Z" fill="#B5D99C"/>`,
+  stages: [
+    { name: 'une graine', what: 'Un piquet de chantier : ici, on va construire' },
+    { name: 'une pousse', what: 'Un premier bout de rail' },
+    { name: 'une jeune plante', what: 'La voie se sépare : voici l’aiguillage et son levier' },
+    { name: 'un bouton', what: 'Un signal et le poste d’aiguillage' },
+    { name: 'une fleur', what: 'Une locomotive arrive' },
+    { name: 'un arbre', what: 'Un train complet, le signal passe au vert' },
+  ],
+  stickers: [
+    { from: 0, to: 0, svg: S(`<rect x="96" y="104" width="5" height="36" rx="2" fill="#C98E4E"/><path d="M101 106 L122 112 L101 118 Z" fill="#E8892F"/>`) + S(`<ellipse cx="78" cy="140" rx="9" ry="5" fill="#B9C2C7"/><ellipse cx="86" cy="136" rx="7" ry="4" fill="#A3AEB4"/><ellipse cx="120" cy="141" rx="8" ry="4" fill="#B9C2C7"/>`) },
+    { from: 1, to: 1, svg: S(`<rect x="40" y="126" width="80" height="20" rx="4" fill="#C9CFD3"/>${sleepers(44, 112, 136)}${rails(40, 120, 136)}`) },
+    { from: 2, svg: S(`<rect x="4" y="126" width="192" height="20" rx="4" fill="#C9CFD3"/>${sleepers(8, 190, 136)}${rails(4, 196, 136)}`) + S(`<path d="M96 130 Q140 128 196 98" stroke="#C9CFD3" stroke-width="20" fill="none" stroke-linecap="round"/>${branchSleepers()}<path d="M96 133 Q140 131 196 101" stroke="#7D8A92" stroke-width="2.6" fill="none"/><path d="M104 141 Q146 138 196 109" stroke="#7D8A92" stroke-width="2.6" fill="none"/>`) + S(`<rect x="84" y="150" width="14" height="9" rx="2" fill="#7D8A92"/><path d="M91 151 L99 140" stroke="#1E2B2F" stroke-width="3" stroke-linecap="round"/><circle cx="99" cy="139" r="3.5" fill="#D9617A"/>`) },
+    { from: 3, svg: S(`<rect x="14" y="78" width="40" height="34" rx="3" fill="#FFF3DF"/><path d="M10 80 L34 62 L58 80 Z" fill="#A8364F"/><rect x="22" y="88" width="10" height="9" rx="1.5" fill="#BFE0F5"/><rect x="38" y="88" width="10" height="9" rx="1.5" fill="#BFE0F5"/><rect x="29" y="100" width="10" height="12" rx="1.5" fill="#8A6F4D"/>`) + S(`<rect x="160" y="64" width="4" height="46" rx="2" fill="#1E2B2F"/><rect x="154" y="48" width="16" height="26" rx="4" fill="#1E2B2F"/><circle cx="162" cy="55" r="4" fill="#E0524F"/><circle cx="162" cy="67" r="4" fill="#3D4A50"/>`) },
+    { from: 4, svg: S(loco(118, 138)) + `<circle class="smoke" cx="128" cy="92" r="6" fill="#fff"/><circle class="smoke" style="animation-delay:1.2s" cx="133" cy="84" r="5" fill="#fff"/>` },
+    { from: 5, svg: S(wagon(78, 138, '#2F6FB0', '<circle cx="9" cy="-24" r="5" fill="#E8892F"/><circle cx="20" cy="-25" r="5" fill="#F2B84B"/>') + wagon(40, 138, '#F2B84B', '<rect x="5" y="-30" width="9" height="9" rx="1.5" fill="#9C7A55"/><rect x="16" y="-30" width="9" height="9" rx="1.5" fill="#C98E4E"/>') + wagon(2, 138, '#2E7D5B')) + `<circle cx="162" cy="55" r="4.4" fill="#3D4A50"/><circle cx="162" cy="67" r="4.4" fill="#7DD36F"/>` + S(`<path d="M178 150 V128" stroke="#8A6F4D" stroke-width="3"/><circle cx="178" cy="120" r="12" fill="#6FA866"/><circle cx="172" cy="126" r="7" fill="#5B8F57"/>`) },
+  ],
+};
+
+// =====================================================================
+// Versions 7-9 ans : illustration plate et géométrique, plus moderne,
+// sans contour d'autocollant (une ombre douce suffit).
+// =====================================================================
+const F = (inner, cls = '') => `<g filter="url(#flat)" class="${cls}">${inner}</g>`;
+
+// ---------- Fées 7-9 ans : la forêt mystique ----------
+const shroom = (x, y, s = 1) => glow(x, y - 12 * s, 9 * s, '#5FE0D2') + `
+  <g transform="translate(${x} ${y}) scale(${s})">
+    <rect x="-2" y="-12" width="4" height="12" rx="2" fill="#DCEFEA"/>
+    <path d="M-9 -11 Q0 -24 9 -11 Z" fill="#3FD0C0"/>
+    <circle cx="-3" cy="-15" r="1.3" fill="#B8FFF6"/><circle cx="3" cy="-17" r="1" fill="#B8FFF6"/>
+  </g>`;
+const pine = (x, base, h, c) => `<path d="M${x - h * .3} ${base} L${x} ${base - h} L${x + h * .3} ${base}Z" fill="${c}"/>`;
+const fox = (x, y) => `
+  <g transform="translate(${x} ${y})">
+    <path d="M-8 0 Q-24 -2 -21 -15 Q-15 -7 -6 -6Z" fill="#E0762B"/>
+    <circle cx="-20" cy="-13" r="2.4" fill="#F4EDE4"/>
+    <path d="M-8 0 L-6 -20 L6 -20 L8 0Z" fill="#E0762B"/>
+    <path d="M-3 0 L0 -14 L3 0Z" fill="#F4EDE4"/>
+    <path d="M-7 -20 L0 -30 L7 -20 L0 -14Z" fill="#E0762B"/>
+    <path d="M-7 -21 L-6 -34 L-1 -28Z M7 -21 L6 -34 L1 -28Z" fill="#B85417"/>
+    <path d="M-3 -18 L0 -14 L3 -18Z" fill="#F4EDE4"/>
+    <circle cx="0" cy="-15" r="1" fill="#1E2B2F"/>
+    <circle cx="-3" cy="-23" r=".9" fill="#1E2B2F"/><circle cx="3" cy="-23" r=".9" fill="#1E2B2F"/>
+  </g>`;
+const owl = (x, y) => `
+  <g transform="translate(${x} ${y})">
+    <path d="M-7 8 Q-8 -6 0 -8 Q8 -6 7 8Z" fill="#6E5B49"/>
+    <path d="M-4 8 Q0 -2 4 8Z" fill="#C9B79A"/>
+    <circle cx="-3" cy="-3" r="2.6" fill="#F4EDE4"/><circle cx="3" cy="-3" r="2.6" fill="#F4EDE4"/>
+    <circle cx="-3" cy="-3" r="1.2" fill="#1E2B2F"/><circle cx="3" cy="-3" r="1.2" fill="#1E2B2F"/>
+    <path d="M-6 -9 L-4 -5 M6 -9 L4 -5" stroke="#6E5B49" stroke-width="2"/>
+    <path d="M-1 0 L0 2 L1 0Z" fill="#E0A33A"/>
+  </g>`;
+
+const FEES79 = {
+  title: 'Forêt mystique — la logique',
+  sub: 'L’arbre-refuge du gardien de la forêt',
+  phone: 'Mon jardin',
+  bg: `
+    <rect width="200" height="170" fill="url(#sky-fees79)"/>
+    ${[[20, 20], [44, 38], [78, 14], [120, 26], [184, 18], [140, 48]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r=".9" fill="#E9F1E7" opacity=".8"/>`).join('')}
+    <circle cx="162" cy="32" r="11" fill="#E9F1E7"/><circle cx="167" cy="28" r="10" fill="#1A4553"/>
+    ${[[12, 118, 44], [34, 118, 52], [170, 118, 50], [192, 118, 40], [58, 118, 36], [146, 118, 38]].map(([x, b, h]) => pine(x, b, h, '#17404A')).join('')}
+    <path d="M0 118 Q60 110 120 116 T200 112 V170 H0Z" fill="#24503F"/>
+    <path d="M0 140 Q60 132 120 139 T200 136 V170 H0Z" fill="#2E6149"/>
+    ${[[4, 170, 58], [196, 170, 64]].map(([x, b, h]) => pine(x, b, h, '#10303A')).join('')}`,
+  stages: [
+    { name: 'une graine', what: 'Un cristal de graine qui brille dans la roche' },
+    { name: 'une pousse', what: 'Des champignons lumineux sortent de terre' },
+    { name: 'une jeune plante', what: 'Un arbre-refuge, avec porte et fenêtre éclairée' },
+    { name: 'un bouton', what: 'Marches de pierre, lanterne et champignons phosphorescents' },
+    { name: 'une fleur', what: 'Des feux follets, et un renard qui monte la garde' },
+    { name: 'un arbre', what: 'Plateforme, échelle de corde, hibou et pierres runiques' },
+  ],
+  stickers: [
+    { from: 0, to: 0, svg: glow(100, 122, 18, '#5FE0D2') + F(`
+        <path d="M84 144 L90 132 L110 130 L118 144Z" fill="#56666B"/>
+        <path d="M90 132 L110 130 L104 136 L94 137Z" fill="#6E7F84"/>
+        <path d="M100 110 L108 117 L106 130 L100 134 L94 130 L92 117Z" fill="#5FE0D2"/>
+        <path d="M100 110 L100 134 L94 130 L92 117Z" fill="#3CC2B6"/>
+        <path d="M92 117 L100 121 L108 117" stroke="#B8FFF6" stroke-width="1" fill="none"/>`) },
+    { from: 1, to: 1, svg: F(shroom(94, 142, 1) + shroom(106, 143, .75) + shroom(114, 141, .55)) },
+    { from: 2, svg: F(`
+        <path d="M68 144 Q80 134 82 122 L118 122 Q120 134 134 144 Q120 139 112 144 Q100 137 88 144 Q80 139 68 144Z" fill="#4A3424"/>
+        <path d="M82 126 L84 66 L116 66 L118 126Z" fill="#4A3424"/>
+        <path d="M90 122 L91 72 M108 120 L109 74 M99 112 L99.5 96" stroke="#3A281B" stroke-width="1.4"/>
+        <path d="M93 136 V118 a7 7 0 0 1 14 0 V136Z" fill="#2B1D14" stroke="#8C6A45" stroke-width="2"/>
+        ${glow(109, 94, 8, '#FFC861')}
+        <circle cx="109" cy="94" r="4.5" fill="#FFC861" stroke="#8C6A45" stroke-width="2"/>
+        <path d="M56 74 L100 24 L144 74 L100 88Z" fill="#1E5B47"/>
+        <path d="M56 74 L100 88 L68 92Z" fill="#184C3B"/>
+        <path d="M144 74 L100 88 L132 92Z" fill="#216650"/>
+        <path d="M100 24 L56 74 L82 60Z" fill="#27705A"/>
+        <path d="M100 24 L144 74 L120 56Z" fill="#1A5242"/>`) },
+    { from: 3, svg: F(`
+        <path d="M92 147 L106 146 L108 151 L94 152Z" fill="#7F9094"/>
+        <path d="M100 155 L114 154 L116 159 L102 160Z" fill="#6B7C80"/>
+        <path d="M90 162 L104 161 L106 166 L92 167Z" fill="#7F9094"/>
+        ${[[30, 154], [40, 156], [168, 156], [178, 154]].map(([x, y]) => `<path d="M${x} ${y} L${x - 4} ${y - 18} L${x + 1} ${y - 6} L${x + 3} ${y - 20} L${x + 4} ${y}Z" fill="#3A8A5E"/>`).join('')}
+        <rect x="149" y="112" width="3" height="34" fill="#2B1D14"/>
+        ${glow(150.5, 108, 9, '#FFC861')}
+        <rect x="146" y="102" width="9" height="11" rx="2" fill="#FFC861" stroke="#2B1D14" stroke-width="1.5"/>`) + F(shroom(64, 150, .8) + shroom(74, 152, .6) + shroom(132, 150, .7)) },
+    { from: 4, svg: `<g class="float">${[[46, 66, '#5FE0D2'], [150, 56, '#FFC861'], [176, 92, '#5FE0D2'], [30, 100, '#FFC861']].map(([x, y, c]) => glow(x, y, 6, c) + `<circle cx="${x}" cy="${y}" r="2" fill="#F4FFFC"/>`).join('')}</g>` + F(fox(166, 148)) },
+    { from: 5, svg: F(`
+        <rect x="64" y="100" width="22" height="4" fill="#6B4A30"/>
+        <path d="M66 100 V92 M74 100 V92 M82 100 V92 M64 92 H86" stroke="#6B4A30" stroke-width="1.6"/>
+        <path d="M68 104 V144 M76 104 V144" stroke="#C9B79A" stroke-width="1.2"/>
+        ${[112, 120, 128, 136].map(y => `<path d="M68 ${y} H76" stroke="#C9B79A" stroke-width="1.2"/>`).join('')}
+        <path d="M36 150 L38 132 L46 130 L48 150Z" fill="#5C6B70"/>
+        <path d="M52 152 L53 138 L60 137 L62 152Z" fill="#5C6B70"/>`) + glow(42, 140, 6, '#5FE0D2') + glow(57, 144, 5, '#5FE0D2') + `<path d="M40 136 L44 140 L40 144 M56 141 H59 M57.5 140 V146" stroke="#8FF5EA" stroke-width="1.2" fill="none"/>` + F(owl(134, 80)) + [[60, 30], [96, 12], [30, 56]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.1" fill="#E9F1E7"/>`).join('') },
+  ],
+};
+
+// ---------- Gare 7-9 ans : le réseau moderne ----------
+const cSleepers = (x1, x2, y) => {
+  let s = '';
+  for (let x = x1; x <= x2; x += 10) s += `<rect x="${x}" y="${y - 6}" width="4" height="16" rx="1" fill="#D4D2CC"/>`;
+  return s;
+};
+const mRails = (x1, x2, y) => `<rect x="${x1}" y="${y - 3}" width="${x2 - x1}" height="2.4" fill="#56636B"/><rect x="${x1}" y="${y + 5}" width="${x2 - x1}" height="2.4" fill="#56636B"/>`;
+const branchModern = () => branchSleepers().replaceAll('#9C7A55', '#D4D2CC');
+const powerCar = (x, y) => `
+  <g transform="translate(${x} ${y})">
+    <path d="M18 -30 L26 -40 L34 -30 M22 -40 H32" stroke="#4A555C" stroke-width="1.4" fill="none"/>
+    <path d="M0 -6 V-30 H46 Q64 -30 75 -13 Q77 -6 71 -6Z" fill="#F4F6F8"/>
+    <path d="M50 -28 Q63 -27 71 -15 L58 -15 Q56 -24 50 -28Z" fill="#1E2B2F"/>
+    <path d="M0 -18 H72 L74 -14 H0Z" fill="#1F4E9C"/>
+    <rect x="0" y="-10" width="72" height="2.5" fill="#D7263D"/>
+    ${[6, 18, 30].map(wx => `<rect x="${wx}" y="-27" width="8" height="6" rx="1.2" fill="#8FC6E8"/>`).join('')}
+    <rect x="5" y="-6" width="18" height="5" rx="2" fill="#2B2F33"/><rect x="47" y="-6" width="18" height="5" rx="2" fill="#2B2F33"/>
+    ${[9, 19, 51, 61].map(cx => `<circle cx="${cx}" cy="-1" r="2.6" fill="#2B2F33"/>`).join('')}
+  </g>`;
+const coach = (x, y) => `
+  <g transform="translate(${x} ${y})">
+    <rect x="0" y="-30" width="52" height="24" rx="3" fill="#F4F6F8"/>
+    <rect x="0" y="-18" width="52" height="4" fill="#1F4E9C"/>
+    <rect x="0" y="-10" width="52" height="2.5" fill="#D7263D"/>
+    ${[4, 14, 24, 34, 44].map(wx => `<rect x="${wx}" y="-27" width="6" height="6" rx="1" fill="#8FC6E8"/>`).join('')}
+    <rect x="4" y="-6" width="14" height="5" rx="2" fill="#2B2F33"/><rect x="34" y="-6" width="14" height="5" rx="2" fill="#2B2F33"/>
+    ${[7, 15, 37, 45].map(cx => `<circle cx="${cx}" cy="-1" r="2.4" fill="#2B2F33"/>`).join('')}
+  </g>`;
+
+const GARE79 = {
+  title: 'Réseau ferré — la logique',
+  sub: 'Les aiguillages d’une ligne à grande vitesse',
+  phone: 'Ma gare',
+  bg: `
+    <rect width="200" height="170" fill="url(#sky-gare79)"/>
+    ${[[6, 70, 18, 48], [26, 84, 14, 34], [42, 62, 16, 56], [120, 76, 16, 42], [138, 58, 20, 60], [160, 80, 14, 38], [176, 66, 18, 52]].map(([x, y, w, h]) =>
+      `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#B9CBD8"/>` +
+      Array.from({ length: Math.floor(h / 10) }, (_, r) => `<rect x="${x + 3}" y="${y + 4 + r * 10}" width="${w - 6}" height="3" fill="#DCE7EF"/>`).join('')).join('')}
+    <rect x="0" y="116" width="200" height="54" fill="#A9C38E"/>
+    <rect x="0" y="152" width="200" height="18" fill="#93AF7A"/>`,
+  stages: [
+    { name: 'une graine', what: 'Un plot de chantier : le tracé est prévu' },
+    { name: 'une pousse', what: 'Une première voie sur traverses en béton' },
+    { name: 'une jeune plante', what: 'L’aiguillage motorisé sépare la voie en deux' },
+    { name: 'un bouton', what: 'Un signal lumineux et le poste de commande' },
+    { name: 'une fleur', what: 'La caténaire est posée, la motrice arrive' },
+    { name: 'un arbre', what: 'La rame complète, le signal passe au vert' },
+  ],
+  stickers: [
+    { from: 0, to: 0, svg: F(`
+        <rect x="84" y="139" width="16" height="3" fill="#F26B1D"/>
+        <path d="M86 140 L92 116 L98 140Z" fill="#F26B1D"/>
+        <path d="M89.6 126 L94.4 126 L95.6 131 L88.4 131Z" fill="#FFFFFF"/>
+        <rect x="111" y="116" width="3" height="26" fill="#D8C7A0"/>
+        <rect x="114" y="118" width="9" height="5" fill="#FFD23F"/>`) },
+    { from: 1, to: 1, svg: F(`<rect x="40" y="127" width="80" height="18" rx="2" fill="#A8A39A"/>${cSleepers(44, 114, 136)}${mRails(40, 120, 136)}`) },
+    { from: 2, svg: F(`<rect x="0" y="127" width="200" height="18" fill="#A8A39A"/>${cSleepers(4, 194, 136)}${mRails(0, 200, 136)}`) + F(`<path d="M96 130 Q140 128 196 98" stroke="#A8A39A" stroke-width="18" fill="none"/>${branchModern()}<path d="M96 133 Q140 131 196 101" stroke="#56636B" stroke-width="2.4" fill="none"/><path d="M104 141 Q146 138 196 109" stroke="#56636B" stroke-width="2.4" fill="none"/>`) + F(`<rect x="80" y="149" width="18" height="10" rx="1.5" fill="#F2C531"/><rect x="80" y="149" width="18" height="3" fill="#3D4A50"/><path d="M98 154 Q104 154 104 146" stroke="#3D4A50" stroke-width="1.4" fill="none"/>`) },
+    { from: 3, svg: F(`
+        <rect x="10" y="56" width="38" height="5" fill="#1E2B2F"/>
+        <rect x="12" y="61" width="34" height="55" fill="#2F4B5E"/>
+        ${[0, 1, 2, 3].map(r => [0, 1, 2].map(c => `<rect x="${15 + c * 10.5}" y="${65 + r * 12}" width="8" height="9" fill="#8FC6E8"/>`).join('')).join('')}`) + F(`
+        <rect x="162" y="72" width="3" height="40" fill="#2B2F33"/>
+        <rect x="156" y="50" width="15" height="26" rx="3" fill="#1E2226"/>
+        <circle cx="163.5" cy="57" r="3.6" fill="#FF3B30"/>
+        <circle cx="163.5" cy="69" r="3.6" fill="#3A3F44"/>`) + glow(163.5, 57, 5, '#FF3B30') },
+    { from: 4, svg: F(`
+        ${[60, 150].map(px => `<rect x="${px}" y="84" width="3" height="44" fill="#6B7880"/><path d="M${px} 92 H${px + 18}" stroke="#6B7880" stroke-width="2"/>`).join('')}
+        <path d="M0 98 H200" stroke="#4A555C" stroke-width="1"/>`) + F(powerCar(112, 138)) },
+    { from: 5, svg: F(coach(58, 138) + coach(4, 138)) + `<circle cx="163.5" cy="57" r="3.6" fill="#3A3F44"/>` + glow(163.5, 69, 5, '#34C759') + `<circle cx="163.5" cy="69" r="3.6" fill="#34C759"/>` + [[29, 92], [48, 80], [143, 70], [182, 82]].map(([x, y]) => `<rect x="${x}" y="${y}" width="6" height="3" fill="#FFD866"/>`).join('') },
+  ],
+};
+
+const THEMES = {
+  fees: { '4-6': FEES, '7-9': FEES79 },
+  gare: { '4-6': GARE, '7-9': GARE79 },
+};
+let current = 'fees';
+let age = '4-6';
+const theme = () => THEMES[current][age];
+
+function scene(theme, stage, animateNew = false) {
+  const parts = theme.stickers
+    .filter(s => s.from <= stage && (s.to === undefined || s.to >= stage))
+    .map(s => (animateNew && s.from === stage ? `<g class="pop">${s.svg}</g>` : s.svg))
+    .join('');
+  const alt = `${theme.sub} : ${theme.stages[stage].name}`;
+  return `<svg viewBox="0 0 200 170" role="img" aria-label="${alt}">${theme.bg}${parts}</svg>`;
+}
+
+function render() {
+  const t = theme();
+  document.getElementById('zone-title').textContent = t.title;
+  document.getElementById('zone-sub').textContent = t.sub;
+  document.getElementById('phone-title').textContent = t.phone;
+  document.getElementById('grid').innerHTML = t.stages.map((s, i) => `
+    <div class="card" data-stage="${i}">
+      ${scene(t, i)}
+      <div class="label"><strong>${s.name[0].toUpperCase() + s.name.slice(1)}</strong><span>stade ${i + 1} sur 6</span></div>
+      <div class="new">${s.what}</div>
+    </div>`).join('');
+  renderPhone(4, false);
+}
+
+function renderPhone(stage, animate) {
+  const t = theme();
+  const others = ['Numération', 'Calcul', 'Géométrie', 'Attention', 'Mémoire', 'Espace', 'Problèmes'];
+  document.getElementById('tiles').innerHTML =
+    `<div class="tile">${scene(t, stage, animate)}<span>Logique</span></div>` +
+    others.map(n => `<div class="tile ghost"><svg viewBox="0 0 200 170">${t.bg}</svg><span>${n}</span></div>`).join('');
+}
+
+document.querySelectorAll('.tab[data-theme]').forEach(b => b.addEventListener('click', () => {
+  current = b.dataset.theme;
+  document.querySelectorAll('.tab[data-theme]').forEach(x => x.setAttribute('aria-selected', String(x === b)));
+  render();
+}));
+document.querySelectorAll('.tab[data-age]').forEach(b => b.addEventListener('click', () => {
+  age = b.dataset.age;
+  document.querySelectorAll('.tab[data-age]').forEach(x => x.setAttribute('aria-selected', String(x === b)));
+  render();
+}));
+
+let timer;
+document.getElementById('play').addEventListener('click', () => {
+  clearInterval(timer);
+  let stage = 0;
+  renderPhone(0, true);
+  timer = setInterval(() => {
+    stage += 1;
+    if (stage > 5) return clearInterval(timer);
+    renderPhone(stage, true);
+  }, 1300);
+});
+
+render();
+</script>
+</body>
+</html>

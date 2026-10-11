@@ -1,0 +1,13 @@
+# Dépendances (réinstallées avec « npm install »)
+node_modules/
+
+# Fichier unique généré par « npm run build »
+dist/
+
+# Fichiers temporaires et système
+*.log
+.DS_Store
+Thumbs.db
+
+# Réglages locaux de Claude Code
+.claude/settings.local.json

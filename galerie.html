@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galerie du jardin</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #EEF4F1; font-family: Nunito, system-ui, sans-serif; color: #1E2B2F; }
+  main { padding: 20px; }
+  h1 { font-family: Fredoka, sans-serif; margin: 0 0 12px; }
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tabs button { height: 40px; padding: 0 16px; border-radius: 20px; border: 2px solid #D3E0DA; background: #fff; font: 800 14px Nunito, sans-serif; cursor: pointer; }
+  .tabs button[aria-pressed="true"] { background: #1E2B2F; color: #fff; border-color: #1E2B2F; }
+  .zone { background: #fff; border-radius: 20px; padding: 12px; margin-bottom: 14px; }
+  .zone h2 { font-family: Fredoka, sans-serif; font-size: 18px; margin: 0 0 8px; }
+  .row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  @media (min-width: 1400px) { .row { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+  .row svg { width: 100%; height: auto; border-radius: 12px; display: block; }
+  .row p { margin: 4px 2px 0; font-size: 11px; font-weight: 700; color: #4A5A5E; }
+  .error { color: #A8364F; font-weight: 800; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Galerie du jardin — toutes les zones</h1>
+  <div class="tabs" id="tabs"></div>
+  <div id="zones"></div>
+</main>
+<script type="module">
+  import { GARDEN_DEFS, allThemes, zoneMarkup } from './src/garden-themes/index.js';
+  import { ZONES } from './src/data/zones.js';
+
+  document.body.insertAdjacentHTML('afterbegin', `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>${GARDEN_DEFS}</defs></svg>`);
+  const themes = allThemes();
+  const params = new URLSearchParams(location.search);
+  let current = Number(params.get('t') || 0);
+  // ?s=0,2,5 : n'afficher que certains stades (relecture rapide).
+  const only = params.get('s') ? params.get('s').split(',').map(Number) : null;
+
+  function render() {
+    document.getElementById('tabs').innerHTML = themes
+      .map((t, i) => `<button aria-pressed="${i === current}" data-i="${i}">${t.label} · ${t.age} ans</button>`).join('');
+    const t = themes[current];
+    document.getElementById('zones').innerHTML = ZONES.map((z) => {
+      const zone = t.zones[z.id];
+      if (!zone) return `<div class="zone"><h2>${z.long}</h2><p class="error">Zone pas encore dessinée</p></div>`;
+      return `<div class="zone"><h2>${z.long} — ${zone.sub}</h2><div class="row">${zone.stages.map((what, s) => (only && !only.includes(s)) ? '' :
+        `<div><svg viewBox="0 0 200 170">${zoneMarkup(t, z.id, s)}</svg><p>${s + 1}. ${what}</p></div>`).join('')}</div></div>`;
+    }).join('');
+    document.querySelectorAll('#tabs button').forEach((b) => b.onclick = () => { current = Number(b.dataset.i); params.set('t', current); history.replaceState(null, '', `?${params}`); render(); });
+  }
+  render();
+</script>
+</body>
+</html>
