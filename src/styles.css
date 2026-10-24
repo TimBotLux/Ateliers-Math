@@ -102,8 +102,10 @@ h1, h2, p { margin: 0; }
 
 .mission-card {
   position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 14px;
-  border-radius: 28px; padding: 24px; color: var(--white); min-height: 250px;
+  border-radius: 28px; padding: 24px; color: var(--white);
 }
+/* Mission et Explorer : deux cartes de même taille, qui se partagent la hauteur disponible. */
+.mission-card, .explorer-card { flex: 1 1 0; min-height: 210px; }
 .mission-card__hit { position: absolute; inset: 0; border: none; background: transparent; border-radius: 28px; }
 .mission-card__top { display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; }
 .mission-card__badge { width: 72px; height: 72px; border-radius: 22px; background: rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; }
@@ -119,10 +121,10 @@ h1, h2, p { margin: 0; }
 .mission-card__dots .is-wide { width: 34px; background: var(--white); }
 
 .explorer-card {
-  display: flex; align-items: center; gap: 16px; background: var(--orange-soft); border-radius: 28px;
-  padding: 20px 24px; border: none; text-align: left;
+  display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 14px;
+  background: var(--orange-soft); border-radius: 28px; padding: 24px; border: none; text-align: left;
 }
-.explorer-card__icon { width: 64px; height: 64px; border-radius: 20px; background: var(--white); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.explorer-card__icon { width: 72px; height: 72px; border-radius: 22px; background: var(--white); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .explorer-card__text { display: flex; flex-direction: column; gap: 2px; }
 .explorer-card__title { font-family: var(--display); font-size: 28px; font-weight: 600; }
 .explorer-card__sub { font-size: 16px; font-weight: 700; color: #5A3A1C; }
