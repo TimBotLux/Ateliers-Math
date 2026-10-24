@@ -70,10 +70,10 @@ export default {
     paths: 'Age groups',
     startMission: 'Start My Mission',
     mission: 'My Mission',
-    missionSub: 'A little session made just for you',
-    missionSpeak: 'My Mission: a little session made just for you.',
+    missionSub: 'Follow the path: workshops picked for you',
+    missionSpeak: 'My Mission: follow the path, with workshops picked for you, one after another.',
     explorer: 'Explore',
-    explorerSub: 'I choose my workshop',
+    explorerSub: 'Pick any workshop you like',
     whoPlays: 'Who’s playing?',
   },
 

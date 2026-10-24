@@ -71,10 +71,10 @@ export default {
     paths: 'Parcours',
     startMission: 'Commencer Ma Mission',
     mission: 'Ma Mission',
-    missionSub: 'Une petite séance préparée pour toi',
-    missionSpeak: 'Ma Mission : une petite séance préparée pour toi.',
+    missionSub: 'Suis le chemin : des ateliers choisis pour toi',
+    missionSpeak: 'Ma Mission : suis le chemin, des ateliers choisis pour toi, l’un après l’autre.',
     explorer: 'Explorer',
-    explorerSub: 'Je choisis mon atelier',
+    explorerSub: 'Choisis toi-même l’atelier que tu veux',
     whoPlays: 'Qui joue ?',
   },
 

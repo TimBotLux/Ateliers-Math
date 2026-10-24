@@ -5,7 +5,11 @@ import { buildSession } from '../engines/sessionEngine.js';
 import { t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
 import { GardenBand } from '../components/GardenBand.jsx';
-import { Avatar, CompassIcon, LockIcon, PeopleIcon, SpeakerIcon, StarIcon } from '../components/Icons.jsx';
+import { ExplorerArt, MissionArt } from '../components/HomeArt.jsx';
+import { Avatar, LockIcon, PeopleIcon, SpeakerIcon } from '../components/Icons.jsx';
+
+// Explorer garde la même couleur à tout âge ; contraste 4,5:1 avec le texte blanc.
+const EXPLORER_COLOR = '#B85E14';
 
 export function HomeScreen() {
   const { child, path, setChildPath, stages, go, speak, profiles, selectChild, adaptive } = useApp();
@@ -59,7 +63,7 @@ export function HomeScreen() {
         <div className="mission-card" style={{ background: path.accent }}>
           <button className="mission-card__hit" onClick={startMission} aria-label={t('home.startMission')} />
           <div className="mission-card__top">
-            <div className="mission-card__badge"><StarIcon /></div>
+            <MissionArt color={path.accent} />
             <button className="mission-card__listen" aria-label={t('common.listen')} onClick={() => speak(t('home.missionSpeak'))}>
               <SpeakerIcon />
             </button>
@@ -68,13 +72,10 @@ export function HomeScreen() {
             <span className="mission-card__title">{t('home.mission')}</span>
             <span className="mission-card__sub">{t('home.missionSub')}</span>
           </div>
-          <div className="mission-card__dots" aria-hidden="true">
-            <span className="is-wide" /><span /><span />
-          </div>
         </div>
 
-        <button className="explorer-card" onClick={() => go('explorer')}>
-          <div className="explorer-card__icon"><CompassIcon /></div>
+        <button className="explorer-card" style={{ background: EXPLORER_COLOR }} onClick={() => go('explorer')}>
+          <ExplorerArt color={EXPLORER_COLOR} />
           <div className="explorer-card__text">
             <span className="explorer-card__title">{t('home.explorer')}</span>
             <span className="explorer-card__sub">{t('home.explorerSub')}</span>
