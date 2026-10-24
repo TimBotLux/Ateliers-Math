@@ -53,6 +53,12 @@ export function createAdaptiveEngine(store = defaultStore) {
     },
 
     snapshot: () => JSON.parse(JSON.stringify(load())),
+    /** Efface les paliers d'un enfant (droit à l'effacement). */
+    forget(childId) {
+      delete load()[childId];
+      save();
+    },
+
     restore(data) {
       state = data && typeof data === 'object' ? data : {};
       save();

@@ -1,6 +1,7 @@
 // Matériel virtuel affiché dans les manches : points, objets, formes, cubes, paquets…
 
 import { mulberry32, shuffle } from '../engines/random.js';
+import { t } from '../i18n/index.js';
 
 const DICE = {
   1: [[1, 1]],
@@ -21,7 +22,7 @@ function Dice({ count, scatter, seed }) {
     cells = DICE[count].map(([r, c]) => [r, c + 0.5]);
   }
   return (
-    <svg width="220" height="170" viewBox="0 0 220 170" role="img" aria-label="Des points">
+    <svg width="220" height="170" viewBox="0 0 220 170" role="img" aria-label={t('visual.dots')}>
       {cells.map(([r, c]) => (
         <circle key={`${r}-${c}`} cx={30 + c * 53} cy={32 + r * 53} r="19" fill="#B85E14" />
       ))}
@@ -32,7 +33,7 @@ function Dice({ count, scatter, seed }) {
 function Objects({ emoji, count, size }) {
   const fontSize = size ?? (count <= 5 ? 48 : count <= 10 ? 38 : 30);
   return (
-    <div className="objects" role="img" aria-label={`${count} objets`} style={{ fontSize }}>
+    <div className="objects" role="img" aria-label={t('visual.objects', { count })} style={{ fontSize }}>
       {Array.from({ length: count }, (_, i) => <span key={i}>{emoji}</span>)}
     </div>
   );
@@ -64,7 +65,7 @@ function Pattern({ items }) {
         it ? (
           <Shape key={i} shape={it.shape} color={it.color} size={38} />
         ) : (
-          <span key={i} className="pattern__missing" aria-label="À trouver">?</span>
+          <span key={i} className="pattern__missing" aria-label={t('visual.missing')}>?</span>
         ),
       )}
     </div>
@@ -79,7 +80,7 @@ function BaseTen({ n, removed = 0 }) {
   const removedUnits = Math.min(units, removed);
   const removedTens = Math.ceil(Math.max(0, removed - units) / 10);
   return (
-    <div className="baseten" role="img" aria-label="Des cubes">
+    <div className="baseten" role="img" aria-label={t('visual.cubes')}>
       {Array.from({ length: tens }, (_, i) => (
         <span key={`t${i}`} className={`baseten__ten ${i >= tens - removedTens ? 'is-removed' : ''}`} />
       ))}
@@ -94,7 +95,7 @@ function BaseTen({ n, removed = 0 }) {
 
 function Groups({ groups, size }) {
   return (
-    <div className="groups" role="img" aria-label="Des paquets">
+    <div className="groups" role="img" aria-label={t('visual.bags')}>
       {Array.from({ length: groups }, (_, g) => (
         <span key={g} className="groups__bag">
           {Array.from({ length: size }, (_, i) => <span key={i} className="groups__dot" />)}
@@ -109,7 +110,7 @@ function Groups({ groups, size }) {
 /** Fraction écrite « en étage » (numérateur sur dénominateur). */
 export function Frac({ n, d }) {
   return (
-    <span className="frac" aria-label={`${n} sur ${d}`}>
+    <span className="frac" aria-label={t('common.fractionAria', { n, d })}>
       <span>{n}</span>
       <span className="frac__bar" />
       <span>{d}</span>
@@ -128,7 +129,7 @@ function FractionBars({ items }) {
     <div className="fbars">
       {items.map(({ n, d }, k) => (
         <div key={k} className="fbars__row">
-          <svg viewBox="0 0 240 34" width="100%" role="img" aria-label={`${n} sur ${d}`}>
+          <svg viewBox="0 0 240 34" width="100%" role="img" aria-label={t('common.fractionAria', { n, d })}>
             {Array.from({ length: d }, (_, i) => (
               <rect key={i} x={2 + (i * 236) / d} y="2" width={236 / d} height="30" fill={i < n ? '#7A4FB5' : '#FFFFFF'} stroke="#3D2A5C" strokeWidth="2" />
             ))}
@@ -149,7 +150,7 @@ function Angle({ deg, rotate = 0 }) {
   const ax = 100 + ar * Math.cos(-rad);
   const ay = 100 + ar * Math.sin(-rad);
   return (
-    <svg viewBox="0 0 200 130" width="230" role="img" aria-label="Un angle">
+    <svg viewBox="0 0 200 130" width="230" role="img" aria-label={t('visual.angle')}>
       <g transform={`rotate(${rotate} 100 100)`}>
         <path d={`M126 100 A${ar} ${ar} 0 0 0 ${ax} ${ay}`} fill="#ECE4F6" stroke="#7A4FB5" strokeWidth="2.5" />
         <path d={`M100 100 L170 100 M100 100 L${x2} ${y2}`} stroke="#1E2B2F" strokeWidth="4" strokeLinecap="round" />
@@ -168,7 +169,7 @@ function GridShape({ w, h, cut, labels, showGrid, highlight }) {
   // Coin coupé en haut à droite pour la forme en L.
   const path = cut ? `M0 0 H${(w - cut.w) * size} V${cut.h * size} H${W} V${H} H0 Z` : `M0 0 H${W} V${H} H0 Z`;
   return (
-    <svg viewBox={`-30 -24 ${W + 60} ${H + 48}`} width={Math.min(300, W + 60)} style={{ maxWidth: '100%', height: 'auto' }} role="img" aria-label="Une figure sur un quadrillage">
+    <svg viewBox={`-30 -24 ${W + 60} ${H + 48}`} width={Math.min(300, W + 60)} style={{ maxWidth: '100%', height: 'auto' }} role="img" aria-label={t('visual.grid')}>
       <path d={path} fill={highlight === 'aire' ? '#D9C8F0' : '#ECE4F6'} />
       {showGrid &&
         Array.from({ length: w * h }, (_, i) => {

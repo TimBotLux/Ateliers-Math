@@ -4,7 +4,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { beamAngleAt, swingDurationMs, tiltFor } from '../engines/balanceEngine.js';
-import { CHECK_AGAIN } from '../data/messages.js';
+import { checkAgain } from '../data/messages.js';
+import { t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
 import { MagnifierIcon, NextIcon, ReplayIcon } from '../components/Icons.jsx';
 
@@ -31,7 +32,8 @@ function Scale({ round, angle }) {
   const rad = (angle * Math.PI) / 180;
   const leftDy = -ARM * Math.sin(rad);
   const rightDy = ARM * Math.sin(rad);
-  const label = `Une balance : ${round.left.name} à gauche, ${round.right.name} à droite`;
+  const name = (o) => t(`balance.names.${o.emoji}${o.count || 1}`);
+  const label = t('rounds.balance.aria', { left: name(round.left), right: name(round.right) });
   return (
     <svg width="100%" viewBox="0 0 350 300" role="img" aria-label={label} style={{ maxWidth: 350 }}>
       <rect x="135" y="268" width="80" height="14" rx="7" fill="#C9B79C" />
@@ -56,15 +58,15 @@ function Scale({ round, angle }) {
 
 const CHOICES = [
   {
-    id: 'left', label: 'Le côté gauche descend',
+    id: 'left',
     icon: <><path d="M8 30L56 14" /><path d="M8 30v8M2 38h12" /><path d="M56 14v8M50 22h12" /><path d="M14 8l-6 8M8 16l-1-7M8 16l7-1" stroke="#2E7D5B" /></>,
   },
   {
-    id: 'equal', label: 'Les deux côtés sont égaux',
+    id: 'equal',
     icon: <><path d="M6 22h52" /><path d="M8 22v8M2 30h12" /><path d="M56 22v8M50 30h12" /><path d="M24 8h16M24 14h16" stroke="#2E7D5B" /></>,
   },
   {
-    id: 'right', label: 'Le côté droit descend',
+    id: 'right',
     icon: <><path d="M8 14L56 30" /><path d="M8 14v8M2 22h12" /><path d="M56 30v8M50 38h12" /><path d="M50 8l6 8M56 16l1-7M56 16l-7-1" stroke="#2E7D5B" /></>,
   },
 ];
@@ -100,11 +102,8 @@ export function BalanceRound({ round, onResult, onDone }) {
     return () => cancelAnimationFrame(raf);
   }, [pick, target, reduceMotion]);
 
-  const headline = correct ? 'Tu avais deviné juste !' : CHECK_AGAIN;
-  const observe =
-    round.answer === 'equal'
-      ? 'La balance reste droite : les deux pèsent pareil.'
-      : 'Le côté le plus lourd descend.';
+  const headline = correct ? t('rounds.balance.guessed') : checkAgain();
+  const observe = t(round.answer === 'equal' ? 'rounds.balance.observeEqual' : 'rounds.balance.observeHeavy');
 
   useEffect(() => {
     if (!settled) return;
@@ -148,7 +147,7 @@ export function BalanceRound({ round, onResult, onDone }) {
       {!pick && (
         <div className="choice-grid">
           {CHOICES.map((c) => (
-            <button key={c.id} className="choice choice--tall" aria-label={c.label} onClick={() => choose(c.id)}>
+            <button key={c.id} className="choice choice--tall" aria-label={t(`rounds.balance.${c.id}`)} onClick={() => choose(c.id)}>
               <svg width="64" height="48" viewBox="0 0 64 48" fill="none" stroke="#1E2B2F" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 {c.icon}
               </svg>
@@ -167,7 +166,7 @@ export function BalanceRound({ round, onResult, onDone }) {
             </div>
           </div>
           <div className="feedback__actions">
-            <button className="icon-btn icon-btn--lg" onClick={replay} aria-label="Rejouer cette manche">
+            <button className="icon-btn icon-btn--lg" onClick={replay} aria-label={t('common.replayRound')}>
               <ReplayIcon />
             </button>
             <button
@@ -175,7 +174,7 @@ export function BalanceRound({ round, onResult, onDone }) {
               style={{ background: path.accent, '--countdown': `${AUTO_NEXT_MS}ms` }}
               onClick={onDone}
             >
-              Continuer <NextIcon />
+              {t('common.continue')} <NextIcon />
             </button>
           </div>
         </div>

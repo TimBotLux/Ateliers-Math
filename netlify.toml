@@ -4,7 +4,10 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "22"
+
+# En-têtes de sécurité (CSP, anti-cadre…) : générés au build dans dist/_headers,
+# car la politique de contenu contient l'empreinte du script de la page (voir vite.config.js).
 
 # L'application tient en une seule page : toute adresse inconnue renvoie vers elle.
 [[redirects]]

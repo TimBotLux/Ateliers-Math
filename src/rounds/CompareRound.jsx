@@ -2,7 +2,7 @@
 // Après coup, les objets sont alignés un à un : le matériel montre la réponse.
 
 import { useRef, useState } from 'react';
-import { CHECK_AGAIN } from '../data/messages.js';
+import { t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
 import { Hint } from './ChoiceRound.jsx';
 import { useAutoAdvance } from './useAutoAdvance.js';
@@ -28,9 +28,9 @@ export function CompareRound({ round, onResult, onDone }) {
       cheer();
       advance();
     } else {
-      setTried((t) => [...t, id]);
+      setTried((prev) => [...prev, id]);
       sound('observe');
-      speak(`${CHECK_AGAIN} On les a mis en ligne.`);
+      speak(t('rounds.compare.speakWrong'));
     }
   }
 
@@ -44,7 +44,7 @@ export function CompareRound({ round, onResult, onDone }) {
               key={g.id}
               className={`compare__group ${state}`}
               onClick={() => choose(g.id)}
-              aria-label={g.id === 'left' ? 'Le groupe du haut' : 'Le groupe du bas'}
+              aria-label={t(g.id === 'left' ? 'rounds.compare.top' : 'rounds.compare.bottom')}
             >
               {Array.from({ length: g.count }, (_, i) => (
                 <span key={i} className="emoji">{g.emoji}</span>

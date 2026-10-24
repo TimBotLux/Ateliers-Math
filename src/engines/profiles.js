@@ -13,7 +13,9 @@ export const AVATAR_COLORS = [
   { fg: '#2E7D5B', bg: '#E3F0E7' },
 ];
 
-export const DEFAULT_SETTINGS = { sons: true, voix: true, anim: false, personnage: 'garcon' };
+// voixEnLigne : voix de synthèse hébergées (Edge « Natural », Google), plus naturelles mais qui
+// envoient les phrases lues à leur éditeur ; désactivées tant qu'un adulte ne les autorise pas (RGPD).
+export const DEFAULT_SETTINGS = { sons: true, voix: true, anim: false, personnage: 'garcon', langue: 'fr', voixEnLigne: false };
 
 export function loadProfiles(store = defaultStore) {
   const data = store.readJSON(PROFILES_KEY, null);

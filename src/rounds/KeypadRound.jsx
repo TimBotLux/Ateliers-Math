@@ -5,7 +5,8 @@
 //  - hint / hintVisual : une astuce et un schéma n'apparaissent qu'après une première erreur.
 
 import { useRef, useState } from 'react';
-import { CHECK_AGAIN, confidenceFeedback } from '../data/messages.js';
+import { checkAgain, confidenceFeedback, rightAnswer } from '../data/messages.js';
+import { t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
 import { CheckIcon, EraseIcon, NextIcon } from '../components/Icons.jsx';
 import { Visual } from '../components/Visual.jsx';
@@ -50,15 +51,15 @@ export function KeypadRound({ round, onResult, onDone }) {
       setTries((t) => t + 1);
       setValue('');
       sound('observe');
-      const msg = useConfidence ? confidenceFeedback(false, isSure) : CHECK_AGAIN;
+      const msg = useConfidence ? confidenceFeedback(false, isSure) : checkAgain();
       speak(round.hint ? `${msg} ${round.hint}` : msg);
     }
   }
 
   let hint = ' ';
-  if (solved) hint = round.confidence && tries === 0 ? confidenceFeedback(true, sure) : 'Oui, c’est ça !';
-  else if (revealed) hint = `Regarde : la réponse est ${round.answer}.`;
-  else if (tries > 0) hint = round.confidence && tries === 1 ? confidenceFeedback(false, sure) : CHECK_AGAIN;
+  if (solved) hint = round.confidence && tries === 0 ? confidenceFeedback(true, sure) : rightAnswer();
+  else if (revealed) hint = t('feedback.revealed', { answer: round.answer });
+  else if (tries > 0) hint = round.confidence && tries === 1 ? confidenceFeedback(false, sure) : checkAgain();
 
   const showHelp = tries > 0 && !solved;
 
@@ -83,7 +84,7 @@ export function KeypadRound({ round, onResult, onDone }) {
       {showHelp && round.hint && !revealed && <p className="hint hint--tip fade-in">{round.hint}</p>}
       {revealed ? (
         <button className="primary-btn" style={{ background: path.accent }} onClick={onDone}>
-          Continuer <NextIcon />
+          {t('common.continue')} <NextIcon />
         </button>
       ) : (
         <>
@@ -91,12 +92,12 @@ export function KeypadRound({ round, onResult, onDone }) {
             {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((d) => (
               <button key={d} className="keypad__key" onClick={() => type(d)}>{d}</button>
             ))}
-            <button className="keypad__key" aria-label="Effacer" onClick={() => setValue((v) => v.slice(0, -1))}><EraseIcon /></button>
+            <button className="keypad__key" aria-label={t('common.erase')} onClick={() => setValue((v) => v.slice(0, -1))}><EraseIcon /></button>
             <button className="keypad__key" onClick={() => type('0')}>0</button>
             {round.confidence ? (
               <span aria-hidden="true" />
             ) : (
-              <button className="keypad__key keypad__key--ok" style={{ background: path.accent }} aria-label="Valider" onClick={() => submit()}>
+              <button className="keypad__key keypad__key--ok" style={{ background: path.accent }} aria-label={t('common.validate')} onClick={() => submit()}>
                 <CheckIcon />
               </button>
             )}
@@ -113,10 +114,10 @@ export function ConfidenceButtons({ disabled, onPick, accent }) {
   return (
     <div className="confidence">
       <button className="confidence__btn" disabled={disabled} onClick={() => onPick(false)}>
-        Je pense
+        {t('rounds.confidence.think')}
       </button>
       <button className="confidence__btn confidence__btn--sure" style={{ background: accent }} disabled={disabled} onClick={() => onPick(true)}>
-        <CheckIcon size={22} /> Je suis sûr
+        <CheckIcon size={22} /> {t('rounds.confidence.sure')}
       </button>
     </div>
   );

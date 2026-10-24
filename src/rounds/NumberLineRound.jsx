@@ -4,6 +4,7 @@
 
 import { useRef, useState } from 'react';
 import { confidenceFeedback } from '../data/messages.js';
+import { t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
 import { NextIcon, ReplayIcon } from '../components/Icons.jsx';
 import { Frac } from '../components/Visual.jsx';
@@ -40,7 +41,7 @@ export function NumberLineRound({ round, onResult, onDone }) {
     }
     setChecked({ ok, sure });
     sound(ok ? 'joie' : 'observe');
-    speak(ok ? confidenceFeedback(true, sure) : `${confidenceFeedback(false, sure)} Regarde où se trouve vraiment le nombre.`);
+    speak(ok ? confidenceFeedback(true, sure) : `${confidenceFeedback(false, sure)} ${t('rounds.numberLine.speakWrong')}`);
   }
 
   function retry() {
@@ -60,7 +61,7 @@ export function NumberLineRound({ round, onResult, onDone }) {
         <div className="nl-target">{target.n ? <Frac n={target.n} d={target.d} /> : target.text}</div>
       </div>
       <div className="stage stage--compact">
-        <svg ref={svgRef} viewBox="0 0 340 110" width="100%" className="numberline" onPointerDown={place} role="img" aria-label={`Une droite graduée de ${min} à ${max}`}>
+        <svg ref={svgRef} viewBox="0 0 340 110" width="100%" className="numberline" onPointerDown={place} role="img" aria-label={t('rounds.numberLine.aria', { min, max })}>
           <rect x="0" y="0" width="340" height="110" fill="transparent" />
           <line x1={X0} y1="60" x2={X1} y2="60" stroke="#3D2A5C" strokeWidth="3" strokeLinecap="round" />
           {minor.map((v) => (
@@ -92,20 +93,20 @@ export function NumberLineRound({ round, onResult, onDone }) {
         {checked
           ? checked.ok
             ? confidenceFeedback(true, checked.sure)
-            : `${confidenceFeedback(false, checked.sure)} La flèche verte montre le bon endroit.`
+            : `${confidenceFeedback(false, checked.sure)} ${t('rounds.numberLine.arrow')}`
           : placed === null
-            ? 'Touche la droite pour placer le nombre.'
+            ? t('rounds.numberLine.tap')
             : ' '}
       </p>
       {checked ? (
         <div className="feedback__actions">
           {!checked.ok && (
-            <button className="icon-btn icon-btn--lg" onClick={retry} aria-label="Réessayer">
+            <button className="icon-btn icon-btn--lg" onClick={retry} aria-label={t('common.retry')}>
               <ReplayIcon />
             </button>
           )}
           <button className="primary-btn" style={{ background: path.accent }} onClick={onDone}>
-            Continuer <NextIcon />
+            {t('common.continue')} <NextIcon />
           </button>
         </div>
       ) : (

@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { activityRegistry } from '../activities/index.js';
+import { activityLabel, t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
 import { BackIcon, SpeakerIcon } from '../components/Icons.jsx';
 import { BalanceRound } from '../rounds/BalanceRound.jsx';
@@ -76,10 +77,10 @@ export function ActivityScreen({ activityKey, mission, from = 'home' }) {
   return (
     <div className="screen screen--activity">
       <header className="activity-header">
-        <button className="icon-btn" aria-label="Retour" onClick={() => go(from === 'explorer' ? 'explorer' : 'home')}>
+        <button className="icon-btn" aria-label={t('common.back')} onClick={() => go(from === 'explorer' ? 'explorer' : 'home')}>
           <BackIcon />
         </button>
-        <div className="dots" role="img" aria-label="Manches de l'atelier">
+        <div className="dots" role="img" aria-label={t('activity.rounds')}>
           {Array.from({ length: def.rounds }, (_, i) => (
             <span
               key={i}
@@ -88,13 +89,13 @@ export function ActivityScreen({ activityKey, mission, from = 'home' }) {
             />
           ))}
         </div>
-        <button className="icon-btn icon-btn--accent" style={{ background: path.accent }} aria-label="Écouter la consigne" onClick={() => speak(spoken)}>
+        <button className="icon-btn icon-btn--accent" style={{ background: path.accent }} aria-label={t('activity.listenInstruction')} onClick={() => speak(spoken)}>
           <SpeakerIcon />
         </button>
       </header>
 
       {mission && (
-        <div className="mission-steps" role="img" aria-label="Étapes de la mission">
+        <div className="mission-steps" role="img" aria-label={t('activity.missionSteps')}>
           {mission.steps.map((k, i) => (
             <span key={k} className={`mission-steps__step ${i < mission.index ? 'is-done' : i === mission.index ? 'is-current' : ''}`} />
           ))}
@@ -102,7 +103,7 @@ export function ActivityScreen({ activityKey, mission, from = 'home' }) {
       )}
 
       <div className="activity-title">
-        <h1>{def.label}</h1>
+        <h1>{activityLabel(def)}</h1>
         <p>{instruction}</p>
       </div>
 

@@ -2,7 +2,8 @@
 // Une réponse inattendue déclenche un message de curiosité, jamais « faux ».
 
 import { useEffect, useRef, useState } from 'react';
-import { CHECK_AGAIN } from '../data/messages.js';
+import { checkAgain, rightAnswer } from '../data/messages.js';
+import { t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
 import { EyeIcon } from '../components/Icons.jsx';
 import { MathText, Visual } from '../components/Visual.jsx';
@@ -40,7 +41,7 @@ export function ChoiceRound({ round, onResult, onDone }) {
     } else {
       setTried((t) => [...t, choice.id]);
       sound('observe');
-      speak(choice.label && !/^\d+\/\d+$/.test(choice.label) ? `${choice.label}. ${CHECK_AGAIN}` : CHECK_AGAIN);
+      speak(choice.label && !/^\d+\/\d+$/.test(choice.label) ? `${choice.label}. ${checkAgain()}` : checkAgain());
     }
   }
 
@@ -48,7 +49,7 @@ export function ChoiceRound({ round, onResult, onDone }) {
     <>
       <div className="stage">
         {hidden ? (
-          <button className="reveal-btn" onClick={() => setHidden(false)} aria-label="Revoir les points">
+          <button className="reveal-btn" onClick={() => setHidden(false)} aria-label={t('rounds.choice.revealDots')}>
             <EyeIcon />
           </button>
         ) : round.revealVisual && !solved && tried.length === 0 ? (
@@ -75,7 +76,7 @@ export function ChoiceRound({ round, onResult, onDone }) {
 }
 
 export function Hint({ solved, tried }) {
-  if (solved) return <p className="hint hint--joy fade-in">Oui, c’est ça !</p>;
-  if (tried) return <p className="hint fade-in">{CHECK_AGAIN}</p>;
+  if (solved) return <p className="hint hint--joy fade-in">{rightAnswer()}</p>;
+  if (tried) return <p className="hint fade-in">{checkAgain()}</p>;
   return <p className="hint" aria-hidden="true">&nbsp;</p>;
 }

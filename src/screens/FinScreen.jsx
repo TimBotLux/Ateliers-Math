@@ -4,7 +4,8 @@
 
 import { useEffect } from 'react';
 import { zoneById } from '../data/zones.js';
-import { copyFor } from '../garden-themes/index.js';
+import { copyFor, zoneTexts } from '../garden-themes/index.js';
+import { activityLabel, t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
 import { activityRegistry } from '../activities/index.js';
 import { ActivityIcon } from '../components/ActivityIcons.jsx';
@@ -18,8 +19,8 @@ export function FinScreen({ grown = [], mode, next = null }) {
   const { go, speak, path, child, stages, gardenTheme, garden } = useApp();
   const zones = grown.map(zoneById).filter(Boolean);
   const copy = copyFor(child.theme);
-  const title = `Bravo ${child.name}, ${mode === 'mission' ? 'mission finie' : 'atelier fini'} !`;
-  const lead = zones.length ? copy.grew : `Tu as bien observé. ${copy.idle}`;
+  const title = t(mode === 'mission' ? 'fin.mission' : 'fin.atelier', { name: child.name });
+  const lead = zones.length ? copy.grew : `${t('fin.observed')} ${copy.idle}`;
   const spoken = `${title} ${lead}`;
 
   // Zone mise en avant : la première qui a grandi, sinon la plus développée.
@@ -36,15 +37,15 @@ export function FinScreen({ grown = [], mode, next = null }) {
   const goNext = () => go('activity', { activityKey: next, from: 'explorer' });
   useEffect(() => {
     if (!nextActivity) return undefined;
-    const t = setTimeout(goNext, NEXT_ACTIVITY_MS);
-    return () => clearTimeout(t);
+    const timer = setTimeout(goNext, NEXT_ACTIVITY_MS);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [next]);
 
   return (
     <div className="screen screen--padded fin" style={{ background: path.bg }}>
       <div className="row-end">
-        <button className="icon-btn icon-btn--accent" style={{ background: path.accent }} aria-label="Écouter le message" onClick={() => speak(spoken)}>
+        <button className="icon-btn icon-btn--accent" style={{ background: path.accent }} aria-label={t('fin.listen')} onClick={() => speak(spoken)}>
           <SpeakerIcon />
         </button>
       </div>
@@ -55,7 +56,7 @@ export function FinScreen({ grown = [], mode, next = null }) {
           zoneId={featured}
           stage={featuredStage}
           variant={garden.variant(child.id, featured)}
-          label={gardenTheme.zones[featured]?.stages[featuredStage] ?? copy.own}
+          label={zoneTexts(gardenTheme, featured)?.stages[featuredStage] ?? copy.own}
         />
       </div>
 
@@ -73,14 +74,14 @@ export function FinScreen({ grown = [], mode, next = null }) {
               className="primary-btn primary-btn--xl primary-btn--countdown"
               style={{ background: path.accent, '--countdown': `${NEXT_ACTIVITY_MS}ms` }}
               onClick={goNext}
-              aria-label={`Atelier suivant : ${nextActivity.label}`}
+              aria-label={t('fin.next', { label: activityLabel(nextActivity) })}
             >
               <span className="fin__next-icon"><ActivityIcon activityKey={nextActivity.key} /></span>
-              {nextActivity.label} <NextIcon />
+              {activityLabel(nextActivity)} <NextIcon />
             </button>
             <div className="grid-2">
               <button className="secondary-btn secondary-btn--sm" onClick={() => go('garden', { from: 'home' })}>{copy.see}</button>
-              <button className="secondary-btn secondary-btn--sm" onClick={() => go('home')}>Accueil</button>
+              <button className="secondary-btn secondary-btn--sm" onClick={() => go('home')}>{t('common.home')}</button>
             </div>
           </>
         ) : (
@@ -88,7 +89,7 @@ export function FinScreen({ grown = [], mode, next = null }) {
             <button className="primary-btn primary-btn--xl" style={{ background: path.accent }} onClick={() => go('garden', { from: 'home' })}>
               <SproutIcon color="#FFFFFF" size={24} /> {copy.see}
             </button>
-            <button className="secondary-btn" onClick={() => go('home')}>Retour à l'accueil</button>
+            <button className="secondary-btn" onClick={() => go('home')}>{t('common.backHome')}</button>
           </>
         )}
       </div>

@@ -1,9 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { adaptiveEngine } from '../engines/adaptiveEngine.js';
 import { gardenEngine } from '../engines/gardenEngine.js';
+import { eraseAllData, forgetChild } from '../engines/privacy.js';
 import { loadProfiles, loadSettings, newChild, saveProfiles, saveSettings } from '../engines/profiles.js';
 import { PATHS } from '../data/zones.js';
 import { themeFor } from '../garden-themes/index.js';
+import { setLang } from '../i18n/index.js';
 import { playSound, randomCheer, speak as speakText, stopSpeaking } from './media.js';
 
 const AppContext = createContext(null);
@@ -32,6 +34,10 @@ export function AppProvider({ children }) {
   const [butterfly, setButterfly] = useState(0);
   const systemReduce = usePrefersReducedMotion();
   const reduceMotion = settings.anim || systemReduce;
+
+  // Langue de l'appareil : fixée avant le rendu des écrans, pour que tous les textes
+  // (y compris les consignes générées par les activités) sortent dans la bonne langue.
+  setLang(settings.langue);
 
   const child = profiles.children.find((c) => c.id === profiles.activeId) || profiles.children[0] || null;
   const path = PATHS[child?.path] || PATHS['4-6'];
@@ -73,7 +79,7 @@ export function AppProvider({ children }) {
     setSettings((prev) => {
       const next = { ...prev, [key]: !prev[key] };
       saveSettings(next);
-      if (key === 'voix' && !next.voix) stopSpeaking();
+      if ((key === 'voix' && !next.voix) || (key === 'voixEnLigne' && !next.voixEnLigne)) stopSpeaking();
       return next;
     });
   }, []);
@@ -103,7 +109,7 @@ export function AppProvider({ children }) {
 
   // Voix choisie dans l'Espace adulte, réglée selon l'âge du parcours.
   const speak = useCallback((text) => {
-    if (settingsRef.current.voix) speakText(text, { path: pathRef.current, voice: settingsRef.current.personnage });
+    if (settingsRef.current.voix) speakText(text, { path: pathRef.current, voice: settingsRef.current.personnage, online: settingsRef.current.voixEnLigne });
   }, []);
 
   /**
@@ -129,6 +135,15 @@ export function AppProvider({ children }) {
     });
   }, []);
 
+  const setLanguage = useCallback((langue) => {
+    stopSpeaking();
+    setSettings((prev) => {
+      const next = { ...prev, langue };
+      saveSettings(next);
+      return next;
+    });
+  }, []);
+
   const sound = useCallback((kind) => {
     if (settingsRef.current.sons) playSound(kind);
   }, []);
@@ -148,8 +163,19 @@ export function AppProvider({ children }) {
     profiles, child, path, addChild, selectChild, setChildPath, setChildTheme, gardenTheme,
     settings, toggleSetting, reduceMotion,
     stages, growGarden, gardenTick, adaptive: adaptiveEngine, garden: gardenEngine,
-    speak, cheer, setVoice, sound, butterfly, maybeButterfly,
+    speak, cheer, setVoice, setLanguage, sound, butterfly, maybeButterfly,
     route, go,
+    // Droit à l'effacement : un enfant, ou toutes les données de l'appareil.
+    forgetChild: (id) => {
+      forgetChild(id);
+      setProfiles(loadProfiles());
+      setGardenTick((t) => t + 1);
+    },
+    eraseAll: () => {
+      stopSpeaking();
+      eraseAllData();
+      globalThis.location?.reload();
+    },
     reload: () => {
       setProfiles(loadProfiles());
       setSettings(loadSettings());

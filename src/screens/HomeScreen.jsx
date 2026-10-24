@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { activityRegistry } from '../activities/index.js';
 import { AVATAR_COLORS } from '../engines/profiles.js';
 import { buildSession } from '../engines/sessionEngine.js';
+import { t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
 import { GardenBand } from '../components/GardenBand.jsx';
 import { Avatar, CompassIcon, LockIcon, PeopleIcon, SpeakerIcon, StarIcon } from '../components/Icons.jsx';
@@ -30,42 +31,42 @@ export function HomeScreen() {
         <div className="home-header__who">
           <div className="avatar" style={{ background: avatar.bg }}><Avatar fg={avatar.fg} /></div>
           <div className="home-header__hello">
-            <span>Bonjour</span>
+            <span>{t('home.hello')}</span>
             <strong>{child.name}</strong>
           </div>
         </div>
         <div className="row-8">
           {profiles.children.length > 1 && (
-            <button className="icon-btn" aria-label="Changer d'enfant" onClick={() => setPicking(true)}>
+            <button className="icon-btn" aria-label={t('home.switchChild')} onClick={() => setPicking(true)}>
               <PeopleIcon />
             </button>
           )}
-          <button className="icon-btn" aria-label="Espace adulte" onClick={() => go('adult')}>
+          <button className="icon-btn" aria-label={t('home.adult')} onClick={() => go('adult')}>
             <LockIcon />
           </button>
         </div>
       </header>
 
-      <nav className="path-tabs" aria-label="Parcours">
+      <nav className="path-tabs" aria-label={t('home.paths')}>
         {['4-6', '7-9', '10-12'].map((p) => (
           <button key={p} className={`path-tab ${path.id === p ? 'is-active' : ''}`} aria-pressed={path.id === p} onClick={() => setChildPath(p)}>
-            {p} ans
+            {t(`paths.${p}`)}
           </button>
         ))}
       </nav>
 
       <main className="home-main">
         <div className="mission-card" style={{ background: path.accent }}>
-          <button className="mission-card__hit" onClick={startMission} aria-label="Commencer Ma Mission" />
+          <button className="mission-card__hit" onClick={startMission} aria-label={t('home.startMission')} />
           <div className="mission-card__top">
             <div className="mission-card__badge"><StarIcon /></div>
-            <button className="mission-card__listen" aria-label="Écouter" onClick={() => speak('Ma Mission : une petite séance préparée pour toi.')}>
+            <button className="mission-card__listen" aria-label={t('common.listen')} onClick={() => speak(t('home.missionSpeak'))}>
               <SpeakerIcon />
             </button>
           </div>
           <div className="mission-card__text">
-            <span className="mission-card__title">Ma Mission</span>
-            <span className="mission-card__sub">Une petite séance préparée pour toi</span>
+            <span className="mission-card__title">{t('home.mission')}</span>
+            <span className="mission-card__sub">{t('home.missionSub')}</span>
           </div>
           <div className="mission-card__dots" aria-hidden="true">
             <span className="is-wide" /><span /><span />
@@ -75,8 +76,8 @@ export function HomeScreen() {
         <button className="explorer-card" onClick={() => go('explorer')}>
           <div className="explorer-card__icon"><CompassIcon /></div>
           <div className="explorer-card__text">
-            <span className="explorer-card__title">Explorer</span>
-            <span className="explorer-card__sub">Je choisis mon atelier</span>
+            <span className="explorer-card__title">{t('home.explorer')}</span>
+            <span className="explorer-card__sub">{t('home.explorerSub')}</span>
           </div>
         </button>
       </main>
@@ -85,8 +86,8 @@ export function HomeScreen() {
 
       {picking && (
         <div className="sheet-backdrop" onClick={() => setPicking(false)}>
-          <div className="sheet" role="dialog" aria-label="Changer d'enfant" onClick={(e) => e.stopPropagation()}>
-            <h2>Qui joue ?</h2>
+          <div className="sheet" role="dialog" aria-label={t('home.switchChild')} onClick={(e) => e.stopPropagation()}>
+            <h2>{t('home.whoPlays')}</h2>
             {profiles.children.map((c) => {
               const a = AVATAR_COLORS[c.color] || AVATAR_COLORS[0];
               return (

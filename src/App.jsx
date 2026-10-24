@@ -1,4 +1,5 @@
 import { Butterfly } from './components/Butterfly.jsx';
+import { ErrorBoundary } from './components/ErrorBoundary.jsx';
 import { GardenDefs } from './components/ZoneScene.jsx';
 import { AppProvider, useApp } from './state/AppContext.jsx';
 import { ActivityScreen } from './screens/ActivityScreen.jsx';
@@ -40,8 +41,10 @@ function Router() {
 
 export default function App() {
   return (
-    <AppProvider>
-      <Router />
-    </AppProvider>
+    <ErrorBoundary>
+      <AppProvider>
+        <Router />
+      </AppProvider>
+    </ErrorBoundary>
   );
 }

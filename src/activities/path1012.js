@@ -12,15 +12,15 @@
 //    (voir sessionEngine, option « recency ») ;
 //  - métacognition et effet d'hypercorrection : l'enfant dit s'il est sûr de lui ; une erreur
 //    commise avec assurance, puis corrigée, est particulièrement bien retenue.
+//
+// Les textes viennent du dictionnaire (src/i18n), dans la langue courante au moment de la manche.
 
 import { pick, randInt, shuffle } from '../engines/random.js';
+import { fmtDecimal, fmtNumber, t } from '../i18n/index.js';
 
 const frac = (n, d) => `${n}/${d}`;
-const fmt = (n) => n.toLocaleString('fr-FR').replace(/ /g, ' ');
-const decimal = (v, digits) => v.toFixed(digits).replace('.', ',');
-
-const DENOM_WORDS = { 2: ['demi', 'demis'], 3: ['tiers', 'tiers'], 4: ['quart', 'quarts'], 5: ['cinquième', 'cinquièmes'], 6: ['sixième', 'sixièmes'], 8: ['huitième', 'huitièmes'], 10: ['dixième', 'dixièmes'] };
-export const fractionWords = (n, d) => `${n} ${(DENOM_WORDS[d] || [`${d}ième`, `${d}ièmes`])[n > 1 ? 1 : 0]}`;
+export const fractionWords = (n, d) => t('common.fraction', { n, d });
+const money = (v) => t('common.money', { v });
 
 const fractionChoices = (rng, correct, distractors) => {
   const seen = new Set([correct]);
@@ -44,23 +44,24 @@ const droite = {
   key: 'droite', label: 'La droite des nombres', subtitle: 'Je place fractions et décimaux', path: '10-12', order: 10,
   skills: ['numeration', 'espace', 'attention'], duration: 3, interaction: 'droite',
   create(tier, rng) {
+    const instruction = t('activities.droite.instruction');
     if (tier === 1) {
       const d = pick(rng, [2, 4]);
       const n = randInt(rng, 1, d - 1);
-      return { kind: 'droite', instruction: 'Place ce nombre sur la droite.', target: { n, d }, speak: fractionWords(n, d), value: n / d, min: 0, max: 1, ticks: d, tolerance: 0.07, confidence: true };
+      return { kind: 'droite', instruction, target: { n, d }, speak: fractionWords(n, d), value: n / d, min: 0, max: 1, ticks: d, tolerance: 0.07, confidence: true };
     }
     if (tier === 2) {
       const v = randInt(rng, 1, 19) / 10;
-      return { kind: 'droite', instruction: 'Place ce nombre sur la droite.', target: { text: decimal(v, 1) }, speak: decimal(v, 1), value: v, min: 0, max: 2, ticks: 10, tolerance: 0.1, confidence: true };
+      return { kind: 'droite', instruction, target: { text: fmtDecimal(v, 1) }, speak: fmtDecimal(v, 1), value: v, min: 0, max: 2, ticks: 10, tolerance: 0.1, confidence: true };
     }
     if (rng() < 0.5) {
       const d = pick(rng, [3, 5, 8]);
       let n;
       do n = randInt(rng, 1, 2 * d - 1); while (n % d === 0);
-      return { kind: 'droite', instruction: 'Place ce nombre sur la droite.', target: { n, d }, speak: fractionWords(n, d), value: n / d, min: 0, max: 2, ticks: 2, tolerance: 0.12, confidence: true };
+      return { kind: 'droite', instruction, target: { n, d }, speak: fractionWords(n, d), value: n / d, min: 0, max: 2, ticks: 2, tolerance: 0.12, confidence: true };
     }
     const v = randInt(rng, 5, 95) / 100;
-    return { kind: 'droite', instruction: 'Place ce nombre sur la droite.', target: { text: decimal(v, 2) }, speak: decimal(v, 2), value: v, min: 0, max: 1, ticks: 2, tolerance: 0.06, confidence: true };
+    return { kind: 'droite', instruction, target: { text: fmtDecimal(v, 2) }, speak: fmtDecimal(v, 2), value: v, min: 0, max: 1, ticks: 2, tolerance: 0.06, confidence: true };
   },
 };
 
@@ -73,7 +74,7 @@ const fractions = {
       const d = randInt(rng, 2, 6);
       const n = randInt(rng, 1, d - 1);
       return {
-        kind: 'choix', instruction: 'Quelle fraction de la barre est coloriée ?',
+        kind: 'choix', instruction: t('activities.fractions.colored'),
         visual: { type: 'fractionBars', items: [{ n, d }] },
         choices: fractionChoices(rng, frac(n, d), shuffle(rng, [frac(d - n, d), frac(n, d + 1), frac(n + 1, d), frac(d, n)]).filter((f) => { const [a, b] = f.split('/').map(Number); return a < b; })),
         answer: frac(n, d),
@@ -86,7 +87,9 @@ const fractions = {
       const same = (f) => { const [x, y] = f.split('/').map(Number); return x * b === a * y; };
       const distractors = shuffle(rng, [frac(a + 1, b), frac(a, b + 1), frac(k * a, k * b + 1), frac(a + k, b + k), frac(b - a, b)]).filter((f) => !same(f) && f.split('/').map(Number)[0] < f.split('/').map(Number)[1]);
       return {
-        kind: 'choix', instruction: `Quelle fraction est égale à ${frac(k * a, k * b)} ?`, speak: `Quelle fraction est égale à ${fractionWords(k * a, k * b)} ?`,
+        kind: 'choix',
+        instruction: t('activities.fractions.equal', { f: frac(k * a, k * b) }),
+        speak: t('activities.fractions.equalSpeak', { words: fractionWords(k * a, k * b) }),
         visual: { type: 'fractionBars', items: [{ n: k * a, d: k * b }] },
         choices: fractionChoices(rng, frac(a, b), distractors),
         answer: frac(a, b),
@@ -100,52 +103,50 @@ const fractions = {
     } while (q === s || p * s === r * q);
     const a = frac(p, q); const b = frac(r, s);
     return {
-      kind: 'choix', instruction: 'Laquelle est la plus grande ?', speak: `Laquelle est la plus grande : ${fractionWords(p, q)} ou ${fractionWords(r, s)} ?`,
+      kind: 'choix', instruction: t('activities.fractions.bigger'),
+      speak: t('activities.fractions.biggerSpeak', { a: fractionWords(p, q), b: fractionWords(r, s) }),
       visual: { type: 'fractionBars', items: [{ n: p, d: q }, { n: r, d: s }] }, revealVisual: true,
-      choices: shuffle(rng, [{ id: a, label: a }, { id: b, label: b }]).concat({ id: 'egales', label: 'Égales' }),
+      choices: shuffle(rng, [{ id: a, label: a }, { id: b, label: b }]).concat({ id: 'egales', label: t('activities.fractions.equalChoice') }),
       answer: p * s > r * q ? a : b,
     };
   },
 };
 
 // ---------- 3. Proportionnalité ----------
-const SITUATIONS = [
-  { a: 'personnes', b: 'farine (g)', unit: 50, text: (x, y, z) => `Pour ${x} personnes, il faut ${y} g de farine. Combien de grammes pour ${z} personnes ?` },
-  { a: 'cahiers', b: 'prix (€)', unit: 2, text: (x, y, z) => `${x} cahiers coûtent ${y} €. Combien coûtent ${z} cahiers ?` },
-  { a: 'heures', b: 'distance (km)', unit: 15, text: (x, y, z) => `Un vélo roule ${y} km en ${x} heures. Combien de km en ${z} heures, à la même vitesse ?` },
-  { a: 'pots', b: 'surface (m²)', unit: 6, text: (x, y, z) => `Avec ${x} pots de peinture, on peint ${y} m². Combien de m² avec ${z} pots ?` },
-];
+// Valeur unitaire de chaque situation (même ordre que proportion.situations dans le dictionnaire).
+const SITUATION_UNITS = [50, 2, 15, 6];
 const proportion = {
   key: 'proportion', label: 'Proportionnalité', subtitle: 'Recettes, prix et vitesses', path: '10-12', order: 30,
   skills: ['problemes', 'calcul'], duration: 3, interaction: 'clavier',
   create(tier, rng) {
-    const sit = pick(rng, SITUATIONS);
-    const per = sit.unit * randInt(rng, 1, 4);
+    const index = randInt(rng, 0, SITUATION_UNITS.length - 1);
+    const sit = t('proportion.situations')[index];
+    const per = SITUATION_UNITS[index] * randInt(rng, 1, 4);
     let x; let z;
     if (tier === 1) { x = randInt(rng, 1, 4); z = x * pick(rng, [2, 3, 4]); }
     else if (tier === 2) { x = pick(rng, [2, 3, 4, 5]); z = pick(rng, [1, 2, 3, 4, 5, 6, 7, 8, 9].filter((v) => v !== x && v % x !== 0)); }
     else { [x, z] = pick(rng, [[4, 6], [6, 9], [6, 10], [8, 12], [10, 15], [4, 10]]); }
     const y = x * per;
     const answer = z * per;
-    const text = sit.text(x, y, z);
+    const text = sit.text({ x, y, z });
     return {
-      kind: 'clavier', instruction: 'Situation de proportionnalité', question: null, speak: text, answer, confidence: true,
+      kind: 'clavier', instruction: t('activities.proportion.instruction'), question: null, speak: text, answer, confidence: true,
       visual: { type: 'story', text, emoji: null, table: { headers: [sit.a, sit.b], rows: [[x, y], [z, '?']] } },
-      hint: tier === 1 ? `Il y a ${z / x} fois plus de ${sit.a} : multiplie aussi par ${z / x}.` : `Astuce : cherche d’abord la valeur pour 1, puis pour ${z}.`,
+      hint: tier === 1 ? t('proportion.hintTimes', { k: z / x, what: sit.a }) : t('proportion.hintUnit', { z }),
     };
   },
 };
 
 // ---------- 4. Calcul malin (stratégies entrelacées) ----------
 const STRATEGIES = {
-  fois10: (rng) => { const a = randInt(rng, 12, 450); const b = pick(rng, [10, 100, 1000]); return [`${a} × ${b}`, a * b, `Multiplier par ${b}, c’est décaler les chiffres vers la gauche.`]; },
-  fois5: (rng) => { const a = 2 * randInt(rng, 6, 49); return [`${a} × 5`, a * 5, `Astuce : × 10 puis ÷ 2 (${a} × 10 = ${a * 10}).`]; },
-  fois9: (rng) => { const a = randInt(rng, 12, 89); return [`${a} × 9`, a * 9, `Astuce : × 10 puis − ${a} (${a * 10} − ${a}).`]; },
-  fois11: (rng) => { const a = randInt(rng, 12, 89); return [`${a} × 11`, a * 11, `Astuce : × 10 puis + ${a} (${a * 10} + ${a}).`]; },
-  div4: (rng) => { const a = 4 * randInt(rng, 12, 99); return [`${a} ÷ 4`, a / 4, `Astuce : ÷ 2 puis encore ÷ 2 (${a} ÷ 2 = ${a / 2}).`]; },
-  fois25: (rng) => { const a = 4 * randInt(rng, 3, 39); return [`${a} × 25`, a * 25, `Astuce : ÷ 4 puis × 100 (${a} ÷ 4 = ${a / 4}).`]; },
-  div5: (rng) => { const a = 5 * randInt(rng, 12, 199); return [`${a} ÷ 5`, a / 5, `Astuce : × 2 puis ÷ 10 (${a} × 2 = ${a * 2}).`]; },
-  fois99: (rng) => { const a = randInt(rng, 12, 49); return [`${a} × 99`, a * 99, `Astuce : × 100 puis − ${a} (${a * 100} − ${a}).`]; },
+  fois10: (rng) => { const a = randInt(rng, 12, 450); const b = pick(rng, [10, 100, 1000]); return [`${a} × ${b}`, a * b, t('tricks.fois10', { b })]; },
+  fois5: (rng) => { const a = 2 * randInt(rng, 6, 49); return [`${a} × 5`, a * 5, t('tricks.fois5', { a, p: a * 10 })]; },
+  fois9: (rng) => { const a = randInt(rng, 12, 89); return [`${a} × 9`, a * 9, t('tricks.fois9', { a, p: a * 10 })]; },
+  fois11: (rng) => { const a = randInt(rng, 12, 89); return [`${a} × 11`, a * 11, t('tricks.fois11', { a, p: a * 10 })]; },
+  div4: (rng) => { const a = 4 * randInt(rng, 12, 99); return [`${a} ÷ 4`, a / 4, t('tricks.div4', { a, p: a / 2 })]; },
+  fois25: (rng) => { const a = 4 * randInt(rng, 3, 39); return [`${a} × 25`, a * 25, t('tricks.fois25', { a, p: a / 4 })]; },
+  div5: (rng) => { const a = 5 * randInt(rng, 12, 199); return [`${a} ÷ 5`, a / 5, t('tricks.div5', { a, p: a * 2 })]; },
+  fois99: (rng) => { const a = randInt(rng, 12, 49); return [`${a} × 99`, a * 99, t('tricks.fois99', { a, p: a * 100 })]; },
 };
 const STRATEGY_TIERS = [['fois10', 'fois5', 'fois11'], ['fois5', 'fois9', 'fois11', 'div4'], ['fois9', 'div4', 'fois25', 'div5', 'fois99']];
 const calculmalin = {
@@ -153,7 +154,9 @@ const calculmalin = {
   skills: ['calcul', 'memoire', 'vitesse'], duration: 3, interaction: 'clavier', rounds: 6,
   create(tier, rng) {
     const [question, answer, hint] = STRATEGIES[pick(rng, STRATEGY_TIERS[tier - 1])](rng);
-    return { kind: 'clavier', instruction: 'Calcule de tête, avec une astuce.', question, speak: question.replace('×', 'fois').replace('÷', 'divisé par'), answer, hint, confidence: true };
+    const [x, op, y] = question.split(' ');
+    const speak = op === '×' ? t('speech.times', { a: x, b: y }) : `${x} ${t('speech.dividedBy')} ${y}`;
+    return { kind: 'clavier', instruction: t('activities.calculmalin.instruction'), question, speak, answer, hint, confidence: true };
   },
 };
 
@@ -169,15 +172,16 @@ const aires = {
     else { w = randInt(rng, 4, 15); h = randInt(rng, 3, 12); labels = true; }
     const area = w * h - (cut ? cut.w * cut.h : 0);
     const perimeter = 2 * (w + h);
-    const unitA = tier === 3 ? 'en cm²' : 'en carreaux';
-    const unitP = tier === 3 ? 'en cm' : 'en côtés de carreau';
+    const unit = ask === 'aire'
+      ? t(tier === 3 ? 'activities.aires.unitAreaCm' : 'activities.aires.unitArea')
+      : t(tier === 3 ? 'activities.aires.unitPerimeterCm' : 'activities.aires.unitPerimeter');
     return {
       kind: 'clavier',
-      instruction: ask === 'aire' ? `Quelle est l’aire de cette figure ? (${unitA})` : `Quel est son périmètre ? (${unitP})`,
+      instruction: t(ask === 'aire' ? 'activities.aires.area' : 'activities.aires.perimeter', { unit }),
       question: null, answer: ask === 'aire' ? area : perimeter, confidence: true,
       visual: { type: 'grid', w, h, cut, labels, showGrid: tier < 3 },
       hintVisual: { type: 'grid', w, h, cut, labels, showGrid: true, highlight: ask }, hintReplaces: true,
-      hint: ask === 'aire' ? 'L’aire, c’est la surface à l’intérieur : compte les carreaux.' : 'Le périmètre, c’est la longueur du tour : suis le bord.',
+      hint: t(ask === 'aire' ? 'activities.aires.hintArea' : 'activities.aires.hintPerimeter'),
     };
   },
 };
@@ -192,8 +196,8 @@ const angles = {
       const kind = pick(rng, ['aigu', 'droit', 'obtus']);
       const deg = kind === 'aigu' ? randInt(rng, 25, 65) : kind === 'droit' ? 90 : randInt(rng, 115, 160);
       return {
-        kind: 'choix', instruction: 'Cet angle est…', visual: { type: 'angle', deg, rotate },
-        choices: [{ id: 'aigu', label: 'Aigu' }, { id: 'droit', label: 'Droit' }, { id: 'obtus', label: 'Obtus' }], answer: kind,
+        kind: 'choix', instruction: t('activities.angles.kind'), visual: { type: 'angle', deg, rotate },
+        choices: ['aigu', 'droit', 'obtus'].map((id) => ({ id, label: t(`activities.angles.${id}`) })), answer: kind,
       };
     }
     const deg = tier === 2 ? pick(rng, [30, 45, 60, 90, 120, 135, 150]) : 5 * randInt(rng, 3, 33);
@@ -204,7 +208,7 @@ const angles = {
       if (o >= 10 && o <= 170) options.add(o);
     }
     return {
-      kind: 'choix', instruction: 'Combien mesure cet angle, environ ?', visual: { type: 'angle', deg, rotate },
+      kind: 'choix', instruction: t('activities.angles.measure'), visual: { type: 'angle', deg, rotate },
       choices: shuffle(rng, [...options]).map((o) => ({ id: String(o), label: `${o}°` })), answer: String(deg),
     };
   },
@@ -218,49 +222,49 @@ const etapes = {
   create(tier, rng) {
     const p = pick(rng, NAMES);
     const q = pick(rng, NAMES.filter((n) => n !== p));
-    let text; let answer; let bars;
+    let text; let answer; let bars; let caption = null;
     const kind = pick(rng, tier === 1 ? ['fois', 'tiers'] : tier === 2 ? ['monnaie', 'fractionDe', 'fois'] : ['partage', 'duree', 'fractionDe']);
     if (kind === 'fois') {
       const a = randInt(rng, 6, 25); const k = randInt(rng, 2, 4);
-      text = `Un livre coûte ${a} €. Un jeu coûte ${k} fois plus cher. Combien coûtent le livre et le jeu ensemble ?`;
+      text = t('steps.times', { a, k });
       answer = a + k * a;
-      bars = [{ label: 'Livre', parts: 1, note: `${a} €` }, { label: 'Jeu', parts: k }];
+      bars = [{ label: t('steps.book'), parts: 1, note: money(a) }, { label: t('steps.game'), parts: k }];
     } else if (kind === 'tiers') {
       const part = randInt(rng, 5, 20); const d = pick(rng, [3, 4]); const total = part * d;
-      text = `${p} a ${total} billes. ${p} en donne le ${d === 3 ? 'tiers' : 'quart'} à ${q}. Combien lui en reste-t-il ?`;
+      text = t('steps.part', { p, q, total, d });
       answer = total - part;
       bars = [{ label: p, parts: d, shaded: 1, note: `${total}` }];
     } else if (kind === 'monnaie') {
       const n = randInt(rng, 2, 4); const price = randInt(rng, 2, 5); const extra = randInt(rng, 1, 4);
       // Billet strictement supérieur au total : il y a toujours de la monnaie à rendre.
       const pay = (Math.floor((n * price + extra) / 10) + 1) * 10 + (rng() < 0.5 ? 0 : 10);
-      text = `${p} achète ${n} cahiers à ${price} € et un stylo à ${extra} €. ${p} paie avec ${pay} €. Combien lui rend-on ?`;
+      text = t('steps.change', { p, n, price, extra, pay });
       answer = pay - n * price - extra;
-      bars = [{ label: 'Payé', parts: 1, note: `${pay} €` }, { label: 'Achats', parts: n + 1, note: '?' }];
+      bars = [{ label: t('steps.paid'), parts: 1, note: money(pay) }, { label: t('steps.bought'), parts: n + 1, note: '?' }];
     } else if (kind === 'fractionDe') {
       const d = pick(rng, [3, 4, 5]); const n = randInt(rng, 2, d - 1); const unit = randInt(rng, 3, 9); const total = unit * d;
-      text = `Les ${fractionWords(n, d)} des ${total} élèves vont à la piscine. Combien d’élèves y vont ?`;
+      text = t('steps.fractionOf', { words: fractionWords(n, d), total });
       answer = unit * n;
-      bars = [{ label: 'Élèves', parts: d, shaded: n, note: `${total}` }];
+      bars = [{ label: t('steps.pupils'), parts: d, shaded: n, note: `${total}` }];
     } else if (kind === 'partage') {
       const small = randInt(rng, 10, 40); const diff = 5 * randInt(rng, 2, 6); const total = 2 * small + diff;
-      text = `${p} et ${q} se partagent ${total} €. ${p} reçoit ${diff} € de plus que ${q}. Combien reçoit ${q} ?`;
+      text = t('steps.share', { p, q, total, diff });
       answer = small;
-      bars = [{ label: q, parts: 1, note: '?' }, { label: p, parts: 1, extra: `+${diff} €` }];
-      bars.caption = `Ensemble : ${total} €`;
+      bars = [{ label: q, parts: 1, note: '?' }, { label: p, parts: 1, extra: `+${money(diff)}` }];
+      caption = t('visual.together', { total: money(total) });
     } else {
       const h1 = randInt(rng, 8, 15); const m1 = 5 * randInt(rng, 0, 11); const dur = 5 * randInt(rng, 8, 30);
       const end = h1 * 60 + m1 + dur;
-      const hm = (t) => `${Math.floor(t / 60)} h ${String(t % 60).padStart(2, '0')}`;
-      text = `Un train part à ${hm(h1 * 60 + m1)} et arrive à ${hm(end)}. Combien de minutes dure le trajet ?`;
+      const hm = (mins) => t('steps.clock', { h: Math.floor(mins / 60), m: String(mins % 60).padStart(2, '0') });
+      text = t('steps.duration', { start: hm(h1 * 60 + m1), end: hm(end) });
       answer = dur;
       bars = null;
     }
     return {
-      kind: 'clavier', instruction: 'Lis, modélise, puis calcule.', question: null, speak: text, answer, confidence: true,
+      kind: 'clavier', instruction: t('activities.etapes.instruction'), question: null, speak: text, answer, confidence: true,
       visual: { type: 'story', text, emoji: null },
-      hintVisual: bars ? { type: 'barModel', rows: bars, caption: bars.caption } : null,
-      hint: bars ? 'Astuce : dessine le problème avec des barres, comme ci-dessus.' : 'Astuce : compte d’abord jusqu’à l’heure pile, puis ajoute les minutes.',
+      hintVisual: bars ? { type: 'barModel', rows: bars, caption } : null,
+      hint: t(bars ? 'steps.hintBars' : 'steps.hintClock'),
     };
   },
 };
@@ -280,9 +284,9 @@ const grandsnombres = {
       const number = Number(digits.join(''));
       const values = [target.pos - 1, target.pos, target.pos + 1].filter((pp) => pp >= 0).map((pp) => target.d * 10 ** pp);
       return {
-        kind: 'choix', instruction: `Que vaut le chiffre ${target.d} dans ce nombre ?`,
-        visual: { type: 'placeValue', text: fmt(number), highlight: target.d },
-        choices: shuffle(rng, values).map((v) => ({ id: String(v), label: fmt(v) })), answer: String(target.d * 10 ** target.pos),
+        kind: 'choix', instruction: t('activities.grandsnombres.digit', { d: target.d }),
+        visual: { type: 'placeValue', text: fmtNumber(number), highlight: target.d },
+        choices: shuffle(rng, values).map((v) => ({ id: String(v), label: fmtNumber(v) })), answer: String(target.d * 10 ** target.pos),
       };
     }
     const number = randInt(rng, 1_000_000, 9_999_999);
@@ -290,13 +294,12 @@ const grandsnombres = {
     const rounded = Math.round(number / step) * step;
     const other = rounded === Math.floor(number / step) * step ? rounded + step : Math.floor(number / step) * step;
     const third = Math.round(number / (step * 10)) * step * 10 === rounded ? rounded - step : Math.round(number / (step * 10)) * step * 10;
-    const names = { 1000: 'au millier près', 10_000: 'à la dizaine de mille près', 100_000: 'à la centaine de mille près' };
     const opts = [...new Set([rounded, other, third])];
     while (opts.length < 3) opts.push(rounded + step * (opts.length + 1));
     return {
-      kind: 'choix', instruction: `Arrondis ce nombre ${names[step]}.`,
-      visual: { type: 'placeValue', text: fmt(number) },
-      choices: shuffle(rng, opts).map((v) => ({ id: String(v), label: fmt(v) })), answer: String(rounded),
+      kind: 'choix', instruction: t('activities.grandsnombres.round', { to: t('activities.grandsnombres.to')[step] }),
+      visual: { type: 'placeValue', text: fmtNumber(number) },
+      choices: shuffle(rng, opts).map((v) => ({ id: String(v), label: fmtNumber(v) })), answer: String(rounded),
     };
   },
 };

@@ -4,14 +4,15 @@ Application éducative de mathématiques (4-12 ans, inspiration Montessori), en 
 Dépôt GitHub : https://github.com/TimBotLux/Ateliers-Math (branche `main`).
 Référence produit : `PRD - Ateliers Maths.docx` et maquettes d'origine `Design - ecrans/`,
 hors du dépôt (dans le dossier parent, sur le poste de l'auteur).
-Interface, textes, commentaires et messages de commit : **en français**.
+Code, commentaires et messages de commit : **en français**. L'interface est bilingue
+(français par défaut, anglais britannique), réglage unique pour l'appareil.
 
 ## Commandes
 
 ```bash
 npm run dev     # http://localhost:5173 ; galerie des dessins : /galerie.html (?t=<index>&s=1,3,5)
-npm test        # Vitest sous Node — doit rester au vert avant toute livraison
-npm run build   # dist/index.html : un seul fichier autonome (exigence du PRD)
+npm test        # Vitest 5 sous Node 22+ — doit rester au vert avant toute livraison
+npm run build   # dist/index.html : un seul fichier autonome (exigence du PRD) + dist/_headers (CSP, Netlify)
 ```
 
 ## Règles du produit (non négociables)
@@ -23,6 +24,10 @@ npm run build   # dist/index.html : un seul fichier autonome (exigence du PRD)
   (« Regarde mieux, vérifie ta réponse. ») dans `src/data/messages.js`.
 - **L'enfant n'est jamais bloqué** : replis silencieux (stockage indisponible, parcours vide, 3 essais max).
 - Pas de compte, pas de serveur, rien ne sort de l'appareil (`localStorage` uniquement).
+- **RGPD** : aucune ressource externe (polices intégrées dans `src/fonts/`, jamais de CDN) ; voix en ligne
+  (Edge « Natural », Google) seulement si l'adulte coche `voixEnLigne` ; toute nouvelle donnée enregistrée
+  doit être couverte par `engines/privacy.js` (effacement), `engines/backupSchema.js` (import contrôlé)
+  et le texte `adult.privacy.stored`. La CSP (`vite.config.js`) interdit toute connexion sortante.
 - Décision d'architecture durable → la présenter à l'utilisateur avant de la coder.
 
 ## Architecture (`src/`)
@@ -30,7 +35,9 @@ npm run build   # dist/index.html : un seul fichier autonome (exigence du PRD)
 - `engines/` : `activityRegistry`, `adaptiveEngine` (paliers 1-3, date de dernière pratique),
   `sessionEngine` (Ma Mission ; option `recency` = révisions espacées, utilisée en 10-12),
   `gardenEngine` (8 zones × 6 stades, clé `gardenEngineV2`, ancien compteur `jardinMathsTotal`
-  en lecture seule), `balanceEngine`, `profiles`, `backup`, `storage` (repli mémoire).
+  en lecture seule), `balanceEngine`, `profiles`, `backup` (+ `backupSchema` : nettoyage de tout import),
+  `privacy` (effacement d'un enfant ou de tout l'appareil), `storage` (repli mémoire).
+  `components/ErrorBoundary.jsx` : écran de repli qui répare les données enregistrées puis recharge.
 - `activities/` : `index.js` (4-6 et 7-9), `path1012.js` (10-12), `balanceLevels.js` (poids1).
   Une activité = clé, parcours, ordre, compétences (zones), interaction, générateur de manches.
 - `rounds/` : un composant par type d'interaction (`balance`, `choix`, `comparaison`, `clavier`,
@@ -40,6 +47,10 @@ npm run build   # dist/index.html : un seul fichier autonome (exigence du PRD)
   fragments SVG 200×170. Helpers communs dans `common.js` (S = autocollant 4-6, F = ombre plate,
   `isoBox`/`isoPoint` = isométrique 10-12). Textes dépendant de l'univers : `THEME_COPY`, `choiceLabel`.
 - `state/AppContext.jsx` : profils, réglages, voix (`speak`), encouragements (`cheer`), navigation (`go`).
+- `i18n/` : `fr.js` et `en.js` (mêmes clés, vérifiées par `tests/i18n.test.js`), `garden-en.js`
+  (textes du jardin en anglais), `index.js` (`t()`, `fmtNumber`, `fmtDecimal`, `activityLabel`).
+  **Aucun texte affiché ou lu en dur** : tout nouveau texte va dans les deux dictionnaires.
+  Les générateurs d'activités appellent `t()` au moment de créer la manche.
 
 ## Préférences validées par l'utilisateur
 
@@ -58,5 +69,7 @@ npm run build   # dist/index.html : un seul fichier autonome (exigence du PRD)
 - Après des modifications en rafale, le rechargement à chaud de Vite peut laisser des erreurs
   anciennes dans la console : recharger la page (ou relancer le serveur) avant de conclure.
 - PowerShell : les apostrophes typographiques (’) cassent les chaînes ; utiliser l'outil d'édition.
+- Navigateur intégré en mode mobile : les clics par coordonnées peuvent tomber à côté ; préférer
+  `element.click()` en JavaScript pour tester un bouton précis.
 - Ajouter un test Vitest pour toute règle nouvelle (activités, thèmes, moteurs).
 - Envoi sur GitHub à la demande : `npm test` au vert, commit au message descriptif en français, `git push`.

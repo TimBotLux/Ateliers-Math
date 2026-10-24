@@ -3,6 +3,7 @@
 
 import { zoneById } from '../data/zones.js';
 import { copyFor } from '../garden-themes/index.js';
+import { t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
 import { SproutIcon } from './Icons.jsx';
 import { MiniPlant, MiniStation } from './Plants.jsx';
@@ -14,7 +15,7 @@ export function GardenBand({ from }) {
   const Mini = child.theme === 'gare' ? MiniStation : MiniPlant;
   return (
     <footer className="garden-band" style={{ borderColor: path.border }}>
-      <div className="garden-band__plants" role="img" aria-label={`Résumé : ${copyFor(child.theme).own}`}>
+      <div className="garden-band__plants" role="img" aria-label={t('garden.summary', { own: copyFor(child.theme).own })}>
         {order.map((z) => (
           <Mini key={z} stage={stages[z] ?? 0} color={zoneById(z).color} />
         ))}

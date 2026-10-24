@@ -2,7 +2,8 @@
 // Les fruits se rangent sous les points, un à un : le matériel montre l'écart.
 
 import { useRef, useState } from 'react';
-import { CHECK_AGAIN } from '../data/messages.js';
+import { checkAgain, rightAnswer } from '../data/messages.js';
+import { t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
 import { CheckIcon, MinusIcon, PlusIcon } from '../components/Icons.jsx';
 import { useAutoAdvance } from './useAutoAdvance.js';
@@ -44,19 +45,19 @@ export function BasketRound({ round, onResult, onDone }) {
       advance();
     } else {
       sound('observe');
-      speak(`${CHECK_AGAIN} Un fruit sous chaque point.`);
+      speak(t('rounds.basket.speakWrong'));
     }
   }
 
   return (
     <>
       <div className="stage basket">
-        <div className="basket__row" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }} aria-label="Les points à atteindre">
+        <div className="basket__row" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }} aria-label={t('rounds.basket.dots')}>
           {Array.from({ length: round.target }, (_, i) => <span key={i} className="basket__dot" />)}
         </div>
-        <div className="basket__row" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }} aria-label="Les fruits dans le panier">
+        <div className="basket__row" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }} aria-label={t('rounds.basket.fruits')}>
           {Array.from({ length: count }, (_, i) => (
-            <button key={i} className={`basket__fruit emoji ${i >= round.target ? 'is-extra' : ''}`} onClick={remove} aria-label="Enlever un fruit">
+            <button key={i} className={`basket__fruit emoji ${i >= round.target ? 'is-extra' : ''}`} onClick={remove} aria-label={t('rounds.basket.remove')}>
               {round.emoji}
             </button>
           ))}
@@ -64,17 +65,17 @@ export function BasketRound({ round, onResult, onDone }) {
         <div className="basket__bowl" aria-hidden="true">🧺</div>
       </div>
       <p className={`hint ${checked === 'ok' ? 'hint--joy' : ''}`}>
-        {checked === 'ok' ? 'Oui, c’est ça !' : checked === 'ko' ? CHECK_AGAIN : ' '}
+        {checked === 'ok' ? rightAnswer() : checked === 'ko' ? checkAgain() : ' '}
       </p>
       <div className="choice-grid">
-        <button className="choice" onClick={remove} aria-label="Enlever un fruit">
+        <button className="choice" onClick={remove} aria-label={t('rounds.basket.remove')}>
           <MinusIcon size={34} />
         </button>
-        <button className="choice" onClick={add} aria-label="Ajouter un fruit">
+        <button className="choice" onClick={add} aria-label={t('rounds.basket.add')}>
           <span className="emoji" style={{ fontSize: 40 }}>{round.emoji}</span>
           <PlusIcon size={22} />
         </button>
-        <button className="choice" style={{ background: path.accent, borderColor: path.accent }} onClick={check} aria-label="J'ai fini">
+        <button className="choice" style={{ background: path.accent, borderColor: path.accent }} onClick={check} aria-label={t('rounds.basket.done')}>
           <CheckIcon size={38} />
         </button>
       </div>

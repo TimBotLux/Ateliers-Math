@@ -7,40 +7,30 @@ import fees1012 from './fees1012.js';
 import gare46 from './gare46.js';
 import gare79 from './gare79.js';
 import gare1012 from './gare1012.js';
+import gardenEn from '../i18n/garden-en.js';
+import { getLang, t } from '../i18n/index.js';
 
 export const THEME_IDS = ['fees', 'gare'];
 export const DEFAULT_THEME = 'fees';
 
-/** Textes de l'interface qui dépendent de l'univers choisi. */
-export const THEME_COPY = {
-  fees: {
-    own: 'Mon jardin',
-    see: 'Voir mon jardin',
-    open: 'Ouvrir mon jardin',
-    grew: 'Ton jardin a grandi !',
-    idle: 'Ton jardin attend la suite !',
-    legacyTitle: 'Le jardin d’avant',
-  },
-  gare: {
-    own: 'Ma gare',
-    see: 'Voir ma gare',
-    open: 'Ouvrir ma gare',
-    grew: 'Ta gare s’est agrandie !',
-    idle: 'Ta gare attend la suite !',
-    legacyTitle: 'Le jardin d’avant',
-  },
-};
-export const copyFor = (themeId) => THEME_COPY[themeId] || THEME_COPY[DEFAULT_THEME];
+/** Textes de l'interface qui dépendent de l'univers choisi (dans la langue courante). */
+export const copyFor = (themeId) => t(`theme.${THEME_IDS.includes(themeId) ? themeId : DEFAULT_THEME}`);
 
 /** Nom de l'univers sur le bouton de choix, adapté à l'âge (moins enfantin chez les grands). */
-const CHOICE_LABELS = {
-  fees: { '4-6': 'Le jardin des fées', '7-9': 'La forêt mystique', '10-12': 'Les îles suspendues' },
-  gare: { '4-6': 'La gare et les trains', '7-9': 'Le réseau ferré', '10-12': 'Le hub du futur' },
-};
 export const choiceLabel = (themeId, path) => {
-  const labels = CHOICE_LABELS[themeId] || CHOICE_LABELS[DEFAULT_THEME];
+  const labels = copyFor(themeId).choice;
   return labels[path] || labels['4-6'];
 };
+
+/** Titre et descriptions des stades d'une zone, dans la langue courante. */
+export function zoneTexts(theme, zoneId) {
+  const zone = theme.zones[zoneId];
+  if (getLang() === 'en') {
+    const translated = gardenEn[`${theme.id}${theme.age.replace('-', '')}`]?.[zoneId];
+    if (translated) return translated;
+  }
+  return zone ? { sub: zone.sub, stages: zone.stages } : null;
+}
 
 const THEMES = {
   fees: { '4-6': fees46, '7-9': fees79, '10-12': fees1012 },
@@ -49,11 +39,11 @@ const THEMES = {
 
 /** Thème à dessiner pour un enfant : son choix, dans le style de son parcours. */
 export function themeFor(themeId, path) {
-  const t = THEMES[themeId] || THEMES[DEFAULT_THEME];
-  return t[path] || t['4-6'];
+  const byAge = THEMES[themeId] || THEMES[DEFAULT_THEME];
+  return byAge[path] || byAge['4-6'];
 }
 
-export const allThemes = () => Object.values(THEMES).flatMap((t) => Object.values(t));
+export const allThemes = () => Object.values(THEMES).flatMap((byAge) => Object.values(byAge));
 
 /** Fragment SVG (sans la balise <svg>) d'une zone à un stade donné. */
 export function zoneMarkup(theme, zoneId, stage, { animateNew = false, variant = null } = {}) {

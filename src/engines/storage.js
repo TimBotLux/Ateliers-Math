@@ -43,6 +43,17 @@ export function writeRaw(key, value) {
   }
 }
 
+export function removeRaw(key) {
+  memory.delete(key);
+  const ls = resolve();
+  if (!ls) return;
+  try {
+    ls.removeItem(key);
+  } catch {
+    /* rien à effacer */
+  }
+}
+
 export function readJSON(key, fallback) {
   const raw = readRaw(key);
   if (raw === null) return fallback;
@@ -61,7 +72,7 @@ export function isPersistent() {
   return resolve() !== null;
 }
 
-export const defaultStore = { readRaw, writeRaw, readJSON, writeJSON };
+export const defaultStore = { readRaw, writeRaw, removeRaw, readJSON, writeJSON };
 
 /** Magasin en mémoire, utilisé par les tests. */
 export function createMemoryStore(initial = {}) {
@@ -69,6 +80,7 @@ export function createMemoryStore(initial = {}) {
   const store = {
     readRaw: (k) => (data.has(k) ? data.get(k) : null),
     writeRaw: (k, v) => data.set(k, String(v)),
+    removeRaw: (k) => data.delete(k),
     readJSON(k, fallback) {
       const raw = store.readRaw(k);
       if (raw === null) return fallback;

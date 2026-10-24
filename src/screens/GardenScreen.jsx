@@ -2,10 +2,9 @@
 // Les zones qui ont grandi depuis la dernière visite reçoivent leur nouvel autocollant en direct.
 
 import { useEffect, useState } from 'react';
-import { STAGE_NAMES } from '../engines/gardenEngine.js';
 import { loadSeen, saveSeen } from '../engines/profiles.js';
-import { zoneById } from '../data/zones.js';
-import { THEME_IDS, choiceLabel, copyFor, themeFor } from '../garden-themes/index.js';
+import { THEME_IDS, choiceLabel, copyFor, themeFor, zoneTexts } from '../garden-themes/index.js';
+import { t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
 import { BackIcon, SpeakerIcon } from '../components/Icons.jsx';
 import { OldAppleTree } from '../components/Plants.jsx';
@@ -27,41 +26,41 @@ export function GardenScreen({ from = 'home' }) {
     saveSeen(child.id, stages);
   }, [child.id, stages]);
 
-  const description = `${copy.own}. ${order
-    .map((id) => `${zoneById(id).name} : ${gardenTheme.zones[id]?.stages[stages[id] ?? 0] ?? STAGE_NAMES[stages[id] ?? 0]}`)
-    .join('. ')}.`;
+  // Description d'une zone à son stade actuel (repli : nom générique du stade).
+  const stageText = (id) => {
+    const stage = stages[id] ?? 0;
+    return zoneTexts(gardenTheme, id)?.stages[stage] ?? t('garden.stageNames')[stage];
+  };
+  const zoneName = (id) => t(`zones.${id}.name`);
+  const zoneLabel = (id) => t('garden.zoneLabel', { zone: zoneName(id), text: stageText(id) });
+  const description = `${copy.own}. ${order.map(zoneLabel).join('. ')}.`;
 
   return (
     <div className="screen screen--padded" style={{ background: path.bg }}>
       <header className="page-header">
-        <button className="icon-btn" aria-label="Retour" onClick={() => go(from === 'explorer' ? 'explorer' : 'home')}>
+        <button className="icon-btn" aria-label={t('common.back')} onClick={() => go(from === 'explorer' ? 'explorer' : 'home')}>
           <BackIcon />
         </button>
         <div className="page-header__title"><h1>{copy.own}</h1></div>
-        <button className="icon-btn icon-btn--accent" style={{ background: path.accent }} aria-label="Écouter" onClick={() => speak(description)}>
+        <button className="icon-btn icon-btn--accent" style={{ background: path.accent }} aria-label={t('common.listen')} onClick={() => speak(description)}>
           <SpeakerIcon />
         </button>
       </header>
 
       <div className="garden-grid">
-        {order.map((id) => {
-          const z = zoneById(id);
-          const stage = stages[id] ?? 0;
-          const zone = gardenTheme.zones[id];
-          return (
-            <div key={id} className="garden-zone">
-              <ZoneScene
-                theme={gardenTheme}
-                zoneId={id}
-                stage={stage}
-                animateNew={!reduceMotion && grownSince.includes(id)}
-                variant={garden.variant(child.id, id)}
-                label={`${z.name} : ${zone ? zone.stages[stage] : STAGE_NAMES[stage]}`}
-              />
-              <span className="garden-zone__name">{z.name}</span>
-            </div>
-          );
-        })}
+        {order.map((id) => (
+          <div key={id} className="garden-zone">
+            <ZoneScene
+              theme={gardenTheme}
+              zoneId={id}
+              stage={stages[id] ?? 0}
+              animateNew={!reduceMotion && grownSince.includes(id)}
+              variant={garden.variant(child.id, id)}
+              label={zoneLabel(id)}
+            />
+            <span className="garden-zone__name">{zoneName(id)}</span>
+          </div>
+        ))}
       </div>
 
       {legacy && (
@@ -69,13 +68,13 @@ export function GardenScreen({ from = 'home' }) {
           <OldAppleTree />
           <div className="legacy__text">
             <span className="legacy__title">{copy.legacyTitle}</span>
-            <span className="legacy__sub">Tout ce que tu as fait pousser avant</span>
+            <span className="legacy__sub">{t('garden.legacySub')}</span>
           </div>
         </div>
       )}
 
-      <section className="universe" aria-label="Choisir mon univers">
-        <span className="universe__title">Mon univers</span>
+      <section className="universe" aria-label={t('garden.chooseUniverse')}>
+        <span className="universe__title">{t('garden.universe')}</span>
         <div className="universe__choices">
           {THEME_IDS.map((id) => {
             const preview = themeFor(id, path.id);

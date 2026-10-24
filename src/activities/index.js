@@ -1,7 +1,9 @@
-// Les 13 activités, enregistrées dans activityRegistry.
+// Les activités 4-6 et 7-9 ans, enregistrées dans activityRegistry.
 // Chaque générateur produit une manche à partir d'un palier de difficulté (1 à 3).
+// Les textes viennent du dictionnaire (src/i18n), dans la langue courante au moment de la manche.
 
 import { createRegistry } from '../engines/activityRegistry.js';
+import { t } from '../i18n/index.js';
 import { createBalanceRound } from '../engines/balanceEngine.js';
 import { numberChoices, pick, randInt, shuffle } from '../engines/random.js';
 import { POIDS1 } from './balanceLevels.js';
@@ -22,7 +24,7 @@ const subitizing = {
     const n = randInt(rng, 1, max);
     return {
       kind: 'choix',
-      instruction: 'Combien de points vois-tu ?',
+      instruction: t('activities.subitizing.instruction'),
       visual: { type: 'dice', count: n, scatter: tier >= 2, flash: tier === 3 ? 1600 : 0, seed: randInt(rng, 1, 1e6) },
       choices: asChoices(numberChoices(rng, n, { min: 1, max: Math.max(max, 3) })),
       answer: String(n),
@@ -39,7 +41,7 @@ const compte = {
     const emoji = pick(rng, OBJECTS);
     return {
       kind: 'choix',
-      instruction: 'Combien y en a-t-il ?',
+      instruction: t('activities.compte.instruction'),
       visual: { type: 'objects', emoji, count: n },
       choices: asChoices(numberChoices(rng, n, { min: 1, max: max + 2 })),
       answer: String(n),
@@ -61,7 +63,7 @@ const compare = {
     const emoji = pick(rng, OBJECTS);
     return {
       kind: 'comparaison',
-      instruction: 'Où y en a-t-il le plus ?',
+      instruction: t('activities.compare.instruction'),
       groups: [
         { id: 'left', emoji, count: a },
         { id: 'right', emoji, count: b },
@@ -105,7 +107,7 @@ const formes = {
     }));
     return {
       kind: 'choix',
-      instruction: 'Trouve la même forme.',
+      instruction: t('activities.formes.instruction'),
       visual: { type: 'shape', shape: target, color, rotate: 0, big: true },
       choices,
       answer: target,
@@ -123,7 +125,7 @@ const calculsimple = {
     const emoji = pick(rng, FRUITS);
     return {
       kind: 'choix',
-      instruction: 'Combien en tout ?',
+      instruction: t('activities.calculsimple.instruction'),
       visual: { type: 'sum', emoji, a, b },
       choices: asChoices(numberChoices(rng, a + b, { min: 1, max: maxSum + 2 })),
       answer: String(a + b),
@@ -138,7 +140,7 @@ const panier = {
     const [min, max] = [[1, 5], [2, 8], [3, 10]][tier - 1];
     return {
       kind: 'panier',
-      instruction: 'Mets autant de fruits que de points.',
+      instruction: t('activities.panier.instruction'),
       target: randInt(rng, min, max),
       emoji: pick(rng, FRUITS),
     };
@@ -168,7 +170,7 @@ const suite = {
     const distractors = shuffle(rng, PATTERN_ITEMS.filter((p) => p.id !== answer.id)).slice(0, 2);
     return {
       kind: 'choix',
-      instruction: 'Qu’est-ce qui vient ensuite ?',
+      instruction: t('activities.suite.instruction'),
       visual: { type: 'pattern', items: [...seq.slice(0, -1), null] },
       choices: shuffle(rng, [answer, ...distractors]).map((p) => ({
         id: p.id,
@@ -183,7 +185,7 @@ const poids1 = {
   key: 'poids1', label: 'Je pèse', path: '4-6', order: 80,
   skills: ['logique'], duration: 2, interaction: 'prediction', isNew: true,
   create(tier, rng) {
-    return { ...createBalanceRound(POIDS1, tier, rng), instruction: 'Quel côté va descendre ?' };
+    return { ...createBalanceRound(POIDS1, tier, rng), instruction: t('activities.poids1.instruction') };
   },
 };
 
@@ -200,7 +202,7 @@ const addition = {
     const max = [20, 50, 100][tier - 1];
     const a = randInt(rng, 2, max - 2);
     const b = randInt(rng, 1, max - a);
-    return keypad('Réunis les deux quantités.', `${a} + ${b}`, `${a} plus ${b}`, a + b, { type: 'blocks', terms: [a, b] });
+    return keypad(t('activities.addition.instruction'), `${a} + ${b}`, t('speech.plus', { a, b }), a + b, { type: 'blocks', terms: [a, b] });
   },
 };
 
@@ -211,7 +213,7 @@ const soustraction = {
     const [min, max] = [[5, 20], [15, 50], [30, 100]][tier - 1];
     const a = randInt(rng, min, max);
     const b = randInt(rng, 1, a - 1);
-    return keypad('J’enlève et je regarde ce qui reste.', `${a} − ${b}`, `${a} moins ${b}`, a - b, { type: 'blocks', terms: [a], remove: b });
+    return keypad(t('activities.soustraction.instruction'), `${a} − ${b}`, t('speech.minus', { a, b }), a - b, { type: 'blocks', terms: [a], remove: b });
   },
 };
 
@@ -222,45 +224,44 @@ const multiplication = {
     const [maxK, maxN] = [[3, 4], [5, 5], [6, 9]][tier - 1];
     const k = randInt(rng, 2, maxK);
     const n = randInt(rng, 2, maxN);
-    return keypad('Combien en tout dans les paquets ?', `${k} × ${n}`, `${k} paquets de ${n}`, k * n, { type: 'groups', groups: k, size: n });
+    return keypad(t('activities.multiplication.instruction'), `${k} × ${n}`, t('speech.bags', { k, n }), k * n, { type: 'groups', groups: k, size: n });
   },
 };
 
 const NAMES = ['Léa', 'Nour', 'Tom', 'Inès', 'Hugo', 'Maya', 'Sami', 'Jade'];
-const THINGS = [['billes', '🔵'], ['cartes', '🃏'], ['pommes', '🍎'], ['autocollants', '⭐'], ['coquillages', '🐚']];
 
 const problemes = {
   key: 'problemes', label: 'Je résous', subtitle: 'Des petites histoires à démêler', path: '7-9', order: 40,
   skills: ['problemes', 'logique', 'calcul'], duration: 3, interaction: 'clavier',
   create(tier, rng) {
     const p = pick(rng, NAMES);
-    const [what, emoji] = pick(rng, THINGS);
+    const [what, emoji] = pick(rng, t('stories.things'));
     let text;
     let answer;
     if (tier === 1) {
       const a = randInt(rng, 3, 12);
       const b = randInt(rng, 1, 8);
       if (rng() < 0.5) {
-        text = `${p} a ${a} ${what}. On lui en donne ${b}. Combien en a ${p} maintenant ?`;
+        text = t('stories.give', { p, a, what, b });
         answer = a + b;
       } else {
         const c = randInt(rng, 1, a - 1);
-        text = `${p} a ${a} ${what}. ${p} en donne ${c} à un ami. Combien lui en reste-t-il ?`;
+        text = t('stories.giveAway', { p, a, what, c });
         answer = a - c;
       }
     } else if (tier === 2) {
       const k = randInt(rng, 2, 5);
       const n = randInt(rng, 2, 6);
-      text = `${p} range ses ${what} dans ${k} boîtes, avec ${n} ${what} dans chaque boîte. Combien de ${what} en tout ?`;
+      text = t('stories.boxes', { p, what, k, n });
       answer = k * n;
     } else {
       const a = randInt(rng, 10, 30);
       const b = randInt(rng, 2, 15);
       const c = randInt(rng, 1, a + b - 1);
-      text = `${p} a ${a} ${what}. ${p} en gagne ${b}, puis en perd ${c}. Combien en a ${p} maintenant ?`;
+      text = t('stories.winLose', { p, a, what, b, c });
       answer = a + b - c;
     }
-    return keypad('Lis l’histoire, puis réponds.', null, text, answer, { type: 'story', text, emoji });
+    return keypad(t('activities.problemes.instruction'), null, text, answer, { type: 'story', text, emoji });
   },
 };
 
@@ -272,14 +273,15 @@ const calculmental = {
     if (op === '×') {
       const a = randInt(rng, 2, 5);
       const b = randInt(rng, 2, 10);
-      return keypad('Calcule dans ta tête.', `${a} × ${b}`, `${a} fois ${b}`, a * b);
+      return keypad(t('activities.calculmental.instruction'), `${a} × ${b}`, t('speech.times', { a, b }), a * b);
     }
     const max = tier === 1 ? 20 : 100;
     const a = randInt(rng, 5, max);
     const b = tier === 2 && rng() < 0.5 ? randInt(rng, 1, 9) * 10 : randInt(rng, 1, Math.min(a - 1, 20));
+    const c = Math.min(a - 1, b);
     return op === '+'
-      ? keypad('Calcule dans ta tête.', `${a} + ${b}`, `${a} plus ${b}`, a + b)
-      : keypad('Calcule dans ta tête.', `${a} − ${Math.min(a - 1, b)}`, `${a} moins ${Math.min(a - 1, b)}`, a - Math.min(a - 1, b));
+      ? keypad(t('activities.calculmental.instruction'), `${a} + ${b}`, t('speech.plus', { a, b }), a + b)
+      : keypad(t('activities.calculmental.instruction'), `${a} − ${c}`, t('speech.minus', { a, b: c }), a - c);
   },
 };
 

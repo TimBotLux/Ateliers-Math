@@ -111,6 +111,14 @@ export function createGardenEngine(store = defaultStore) {
       return RARE_VARIANTS[hashString(`${child.seed}:${zone}`) % RARE_VARIANTS.length];
     },
 
+    /** Efface le jardin d'un enfant (droit à l'effacement) ; le jardin d'avant part avec lui. */
+    forget(childId) {
+      const s = load();
+      delete s.children[childId];
+      if (s.legacy.owner === childId) s.legacy = { present: false, owner: null };
+      save();
+    },
+
     hasLegacy(childId) {
       const s = load();
       return s.legacy.present && s.legacy.owner === childId;

@@ -1,6 +1,8 @@
 // Petits dessins du jardin : mini-plantes et mini-gares de la bande discrète en bas d'écran,
 // et le vieux pommier du « jardin d'avant ».
 
+import { t } from '../i18n/index.js';
+
 /** Mini-plante de la bande de résumé (maquette Accueil). */
 export function MiniPlant({ stage, color }) {
   const top = 30 - stage * 4;
@@ -35,7 +37,7 @@ export function MiniStation({ stage, color }) {
 /** Le jardin d'avant : un vieux pommier, élément historique fixe. */
 export function OldAppleTree() {
   return (
-    <svg width="52" height="52" viewBox="0 0 52 52" role="img" aria-label="Le jardin d'avant : un vieux pommier">
+    <svg width="52" height="52" viewBox="0 0 52 52" role="img" aria-label={t('garden.legacyAria')}>
       <ellipse cx="26" cy="48" rx="20" ry="4" fill="#B79B78" />
       <rect x="23" y="28" width="6" height="20" rx="2" fill="#8A6F4D" />
       <circle cx="26" cy="20" r="15" fill="#8DA88A" />

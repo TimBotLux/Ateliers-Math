@@ -1,9 +1,11 @@
-// Premier lancement : un adulte crée le profil du premier enfant.
+// Premier lancement : un adulte choisit la langue et crée le profil du premier enfant.
 
 import { useState } from 'react';
 import { useApp } from '../state/AppContext.jsx';
 import { DEFAULT_THEME, THEME_IDS, choiceLabel, themeFor } from '../garden-themes/index.js';
+import { t } from '../i18n/index.js';
 import { SproutIcon } from '../components/Icons.jsx';
+import { LanguagePicker } from '../components/LanguagePicker.jsx';
 import { ZoneScene } from '../components/ZoneScene.jsx';
 
 export function ChildForm({ onSubmit, onCancel, submitLabel }) {
@@ -21,21 +23,22 @@ export function ChildForm({ onSubmit, onCancel, submitLabel }) {
       }}
     >
       <label className="field">
-        <span>Prénom</span>
-        <input value={name} maxLength={24} onChange={(e) => setName(e.target.value)} autoFocus placeholder="Prénom de l'enfant" />
+        <span>{t('welcome.firstName')}</span>
+        <input value={name} maxLength={24} onChange={(e) => setName(e.target.value)} autoFocus placeholder={t('welcome.firstNamePlaceholder')} />
+        <span className="muted field__hint">{t('welcome.firstNameHint')}</span>
       </label>
       <div className="field">
-        <span>Parcours</span>
+        <span>{t('welcome.path')}</span>
         <div className="row-8">
           {['4-6', '7-9', '10-12'].map((p) => (
             <button key={p} type="button" className={`path-tab ${childPath === p ? 'is-active' : ''}`} aria-pressed={childPath === p} onClick={() => setChildPath(p)}>
-              {p} ans
+              {t(`paths.${p}`)}
             </button>
           ))}
         </div>
       </div>
       <div className="field">
-        <span>Univers</span>
+        <span>{t('welcome.universe')}</span>
         <div className="universe__choices">
           {THEME_IDS.map((id) => (
             <button
@@ -53,7 +56,7 @@ export function ChildForm({ onSubmit, onCancel, submitLabel }) {
       </div>
       <div className="row-8">
         {onCancel && (
-          <button type="button" className="secondary-btn secondary-btn--sm" onClick={onCancel}>Annuler</button>
+          <button type="button" className="secondary-btn secondary-btn--sm" onClick={onCancel}>{t('welcome.cancel')}</button>
         )}
         <button type="submit" className="primary-btn primary-btn--sm" disabled={!valid}>{submitLabel}</button>
       </div>
@@ -65,14 +68,13 @@ export function WelcomeScreen() {
   const { addChild } = useApp();
   return (
     <div className="screen screen--padded welcome">
+      <LanguagePicker label={t('welcome.language')} />
       <div className="welcome__logo"><SproutIcon size={56} /></div>
       <h1>Ateliers Maths</h1>
-      <p className="muted">
-        Des ateliers de mathématiques à manipuler, sans note ni classement. La progression reste sur cet appareil.
-      </p>
+      <p className="muted">{t('welcome.intro')}</p>
       <section className="panel">
-        <h2>Qui va jouer ?</h2>
-        <ChildForm submitLabel="Commencer" onSubmit={addChild} />
+        <h2>{t('welcome.who')}</h2>
+        <ChildForm submitLabel={t('welcome.start')} onSubmit={addChild} />
       </section>
     </div>
   );
