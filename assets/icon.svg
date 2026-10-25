@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Icône Ateliers Maths : la pousse du logo, en blanc sur le vert de l'application. -->
+  <rect width="1024" height="1024" fill="#2E7D5B"/>
+  <g fill="#FFFFFF">
+    <path d="M512 560 C 340 560 250 455 250 290 C 415 290 512 395 512 560 Z"/>
+    <path d="M512 490 C 512 325 610 225 774 225 C 774 390 676 490 512 490 Z"/>
+  </g>
+  <path d="M512 735 V 470" stroke="#FFFFFF" stroke-width="58" stroke-linecap="round"/>
+  <!-- Trois points (compter = points) : le sol de la pousse. -->
+  <g fill="#F2B84B"><circle cx="412" cy="800" r="30"/><circle cx="512" cy="800" r="30"/><circle cx="612" cy="800" r="30"/></g>
+</svg>

@@ -165,7 +165,7 @@ export default {
     privacy: {
       title: 'Privacy',
       sub: 'Ateliers Maths collects no data: no account, no advertising, no analytics. The app sends nothing off this device.',
-      stored: 'What is saved in this browser: each child’s first name (or nickname), age group and world, the state of their garden, the level reached in each workshop, and the settings.',
+      stored: 'What is saved on this device: each child’s first name (or nickname), age group and world, the state of their garden, the level reached in each workshop, and the settings.',
       host: 'As with any web page, the site’s host sees the connection address when the page loads.',
       rights: '“Export” gives you a copy of all this data. You can also erase it at any time.',
       online: ['More natural online voices', 'Uses Microsoft or Google voices: the sentences read aloud, first name included, are sent to them. When off, only the device’s own voices speak.'],

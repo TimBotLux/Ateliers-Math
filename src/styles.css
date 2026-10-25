@@ -11,7 +11,18 @@
   --white: #FFFFFF;
   --display: 'Fredoka', 'Nunito', system-ui, sans-serif;
   --body: 'Nunito', system-ui, sans-serif;
+  /* Zones des barres système (application Android : variables posées par Capacitor ; 0 ailleurs). */
+  --safe-top: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px));
+  --safe-bottom: max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px));
+  --bar-bg: #EEF4F1;
 }
+/* Fonds opaques derrière les barres système (Android) : le contenu qui défile ne passe pas
+   sous l'heure ni sous les boutons de navigation. Hauteur nulle dans un navigateur. */
+body::before, body::after {
+  content: ''; position: fixed; left: 0; right: 0; z-index: 50; pointer-events: none; background: var(--bar-bg);
+}
+body::before { top: 0; height: var(--safe-top); }
+body::after { bottom: 0; height: var(--safe-bottom); }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; background: #DDE6E1; }
@@ -30,7 +41,11 @@ h1, h2, p { margin: 0; }
 /* ---------- Mise en page ---------- */
 
 .app { max-width: 480px; margin: 0 auto; min-height: 100dvh; background: var(--bg); position: relative; overflow-x: hidden; }
-.screen { min-height: 100dvh; display: flex; flex-direction: column; background: var(--bg); }
+.screen {
+  min-height: 100dvh; display: flex; flex-direction: column; background: var(--bg);
+  /* Bordures transparentes : le fond de l'écran passe sous les barres système, le contenu non. */
+  border-top: var(--safe-top) solid transparent; border-bottom: var(--safe-bottom) solid transparent;
+}
 .screen--padded { padding: 28px 16px 24px; gap: 16px; }
 .screen--activity { padding: 24px 20px 24px; gap: 14px; }
 .row-8 { display: flex; gap: 8px; }
@@ -98,14 +113,16 @@ h1, h2, p { margin: 0; }
 .lang-picker .path-tab { flex: 0 1 auto; padding: 0 16px; height: 40px; }
 .path-tab.is-active { background: var(--ink); border-color: var(--ink); color: var(--white); }
 
-.home-main { flex: 1; display: flex; flex-direction: column; gap: 16px; padding: 20px; }
+/* Grille à rangées égales : les deux cartes ont la même taille, celle de la plus remplie
+   (le texte ne déborde jamais, même avec une grande police sur le téléphone). */
+.home-main { flex: 1; display: grid; grid-auto-rows: 1fr; gap: 16px; padding: 20px; }
 
 .mission-card {
   position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 14px;
   border-radius: 28px; padding: 24px; color: var(--white);
 }
 /* Mission et Explorer : deux cartes de même taille, qui se partagent la hauteur disponible. */
-.mission-card, .explorer-card { flex: 1 1 0; min-height: 210px; }
+.mission-card, .explorer-card { min-height: 210px; }
 .mission-card__hit { position: absolute; inset: 0; border: none; background: transparent; border-radius: 28px; }
 .mission-card__top { display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; }
 /* Illustrations des cartes (HomeArt.jsx) ; currentColor = couleur de la carte. */
@@ -414,7 +431,7 @@ h1, h2, p { margin: 0; }
 
 .sheet-backdrop { position: fixed; inset: 0; background: rgba(30, 43, 47, 0.35); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
 .sheet {
-  width: 100%; max-width: 480px; background: var(--white); border-radius: 28px 28px 0 0; padding: 24px 20px 32px;
+  width: 100%; max-width: 480px; background: var(--white); border-radius: 28px 28px 0 0; padding: 24px 20px calc(32px + var(--safe-bottom));
   display: flex; flex-direction: column; gap: 10px; animation: slide-up 0.25s ease-out;
 }
 .sheet h2 { font-family: var(--display); font-size: 24px; font-weight: 600; margin-bottom: 6px; }

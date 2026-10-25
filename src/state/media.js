@@ -1,6 +1,7 @@
 // Son et voix : activables, l'application fonctionne sans eux.
 
 import { getLang, speechLang, t } from '../i18n/index.js';
+import { isNative, speakNative, stopNative } from './native.js';
 
 // Trois personnages de voix, réglables dans l'Espace adulte.
 // La synthèse du navigateur ne joue pas d'émotion : l'entrain vient du débit,
@@ -85,11 +86,21 @@ const sentences = (text) => text.match(/[^.!?…]+[.!?…]*/g)?.map((s) => s.tri
 
 export function speak(text, { path = '4-6', voice = DEFAULT_VOICE, online = false } = {}) {
   try {
-    const synth = globalThis.speechSynthesis;
-    if (!synth || !text) return;
-    synth.cancel();
+    if (!text) return;
     const preset = VOICE_PRESETS[voice] || VOICE_PRESETS[DEFAULT_VOICE];
     const style = preset[path] || preset['4-6'];
+    // Application Android : moteur vocal du téléphone (la vue web n'a pas de synthèse vocale).
+    if (isNative()) {
+      const parts = sentences(text).map((sentence) => {
+        const excited = sentence.endsWith('!');
+        return { text: sentence, rate: style.rate + (excited ? 0.05 : 0), pitch: Math.min(2, style.pitch + (excited ? 0.15 : 0)) };
+      });
+      speakNative(parts, { lang: getLang(), target: speechLang(), online });
+      return;
+    }
+    const synth = globalThis.speechSynthesis;
+    if (!synth) return;
+    synth.cancel();
     const v = pickVoice(voice in VOICE_PRESETS ? voice : DEFAULT_VOICE, online);
     if (v === false) return; // seules des voix en ligne existent et elles ne sont pas autorisées
     for (const sentence of sentences(text)) {
@@ -114,6 +125,7 @@ export const randomCheer = (name = '') => {
 
 export function stopSpeaking() {
   try {
+    if (isNative()) stopNative();
     globalThis.speechSynthesis?.cancel();
   } catch {
     /* rien */

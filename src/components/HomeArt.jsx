@@ -7,7 +7,7 @@
 /** Chemin pointillé qui relie des pierres d'atelier jusqu'à une étoile. */
 export function MissionArt({ color }) {
   return (
-    <svg className="home-art" viewBox="0 0 180 80" aria-hidden="true" style={{ color }}>
+    <svg className="home-art" viewBox="0 0 180 80" preserveAspectRatio="xMinYMid meet" aria-hidden="true" style={{ color }}>
       <path d="M14 62 C 44 66, 46 26, 76 28 S 112 64, 140 46 S 160 24, 164 22" fill="none" stroke="#fff" strokeOpacity=".55" strokeWidth="4" strokeLinecap="round" strokeDasharray="1 10" />
       {/* Pierres d'atelier : un rond, un triangle, un carré (des ateliers différents). */}
       <g>
@@ -32,7 +32,7 @@ const TILE = { width: 34, height: 30, rx: 9 };
 /** Ateliers étalés en grille ; une main pointe celui que l'enfant choisit. */
 export function ExplorerArt({ color }) {
   return (
-    <svg className="home-art" viewBox="0 0 180 80" aria-hidden="true" style={{ color }}>
+    <svg className="home-art" viewBox="0 0 180 80" preserveAspectRatio="xMinYMid meet" aria-hidden="true" style={{ color }}>
       {/* Rangée du haut : quatre ateliers (points, balance, droite graduée, forme). */}
       <rect x="4" y="4" {...TILE} fill="#fff" fillOpacity=".85" />
       <circle cx="15" cy="15" r="3" fill="currentColor" /><circle cx="27" cy="15" r="3" fill="currentColor" /><circle cx="21" cy="25" r="3" fill="currentColor" />

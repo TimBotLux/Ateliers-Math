@@ -1,6 +1,7 @@
 # Ateliers Maths
 
-Application éducative de mathématiques (4-12 ans, inspiration Montessori), en React + Vite.
+Application éducative de mathématiques (4-12 ans, inspiration Montessori), en React + Vite,
+livrée en page web (Netlify) et en application Android (Capacitor, identifiant `lu.ateliersmaths.app`).
 Dépôt GitHub : https://github.com/TimBotLux/Ateliers-Math (branche `main`).
 Référence produit : `PRD - Ateliers Maths.docx` et maquettes d'origine `Design - ecrans/`,
 hors du dépôt (dans le dossier parent, sur le poste de l'auteur).
@@ -13,6 +14,8 @@ Code, commentaires et messages de commit : **en français**. L'interface est bil
 npm run dev     # http://localhost:5173 ; galerie des dessins : /galerie.html (?t=<index>&s=1,3,5)
 npm test        # Vitest 5 sous Node 22+ — doit rester au vert avant toute livraison
 npm run build   # dist/index.html : un seul fichier autonome (exigence du PRD) + dist/_headers (CSP, Netlify)
+npm run android       # build web + copie dans android/ (cap sync) ; à relancer après chaque changement
+npm run android:open  # ouvre le projet dans Android Studio (construction de l'APK, émulateur)
 ```
 
 ## Règles du produit (non négociables)
@@ -28,6 +31,8 @@ npm run build   # dist/index.html : un seul fichier autonome (exigence du PRD) +
   (Edge « Natural », Google) seulement si l'adulte coche `voixEnLigne` ; toute nouvelle donnée enregistrée
   doit être couverte par `engines/privacy.js` (effacement), `engines/backupSchema.js` (import contrôlé)
   et le texte `adult.privacy.stored`. La CSP (`vite.config.js`) interdit toute connexion sortante.
+- **Android** : aucune permission (Internet retiré par `tools:node="remove"`), `allowBackup="false"`
+  (pas de copie dans le cloud Google) ; vérifié par `tests/privacy.test.js`.
 - Décision d'architecture durable → la présenter à l'utilisateur avant de la coder.
 
 ## Architecture (`src/`)
@@ -47,6 +52,10 @@ npm run build   # dist/index.html : un seul fichier autonome (exigence du PRD) +
   fragments SVG 200×170. Helpers communs dans `common.js` (S = autocollant 4-6, F = ombre plate,
   `isoBox`/`isoPoint` = isométrique 10-12). Textes dépendant de l'univers : `THEME_COPY`, `choiceLabel`.
 - `state/AppContext.jsx` : profils, réglages, voix (`speak`), encouragements (`cheer`), navigation (`go`).
+- `state/native.js` : spécificités Android (Capacitor) — voix du téléphone (la vue web n'a pas de
+  synthèse vocale), sauvegarde par le partage Android, bouton retour. Sans effet dans un navigateur.
+- `android/` : projet natif généré par Capacitor (versionné). Icône et écran de démarrage : sources
+  SVG dans `assets/`, images générées avec `@capacitor/assets` (outil lancé hors du projet).
 - `i18n/` : `fr.js` et `en.js` (mêmes clés, vérifiées par `tests/i18n.test.js`), `garden-en.js`
   (textes du jardin en anglais), `index.js` (`t()`, `fmtNumber`, `fmtDecimal`, `activityLabel`).
   **Aucun texte affiché ou lu en dur** : tout nouveau texte va dans les deux dictionnaires.

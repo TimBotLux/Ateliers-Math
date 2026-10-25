@@ -6,6 +6,7 @@ import { GARDEN_KEY, gardenEngine } from './gardenEngine.js';
 import { BACKUP_FORMAT as FORMAT, sanitizeBackup } from './backupSchema.js';
 import { PROFILES_KEY, SETTINGS_KEY, loadProfiles, loadSettings, saveProfiles, saveSettings } from './profiles.js';
 import { defaultStore } from './storage.js';
+import { isNative, shareBackupFile } from '../state/native.js';
 
 export function exportProgress() {
   return {
@@ -70,12 +71,23 @@ export function repairStoredData(store = defaultStore) {
   }
 }
 
-export function downloadBackup() {
-  const blob = new Blob([JSON.stringify(exportProgress(), null, 2)], { type: 'application/json' });
+/** Fichier de sauvegarde : téléchargement dans un navigateur, partage Android dans l'application. */
+export async function downloadBackup() {
+  const json = JSON.stringify(exportProgress(), null, 2);
+  const fileName = `ateliers-maths-sauvegarde-${new Date().toISOString().slice(0, 10)}.json`;
+  if (isNative()) {
+    try {
+      await shareBackupFile(fileName, json, t('adult.backup'));
+    } catch {
+      /* partage annulé par l'adulte : rien à faire */
+    }
+    return;
+  }
+  const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `ateliers-maths-sauvegarde-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = fileName;
   document.body.appendChild(a);
   a.click();
   a.remove();

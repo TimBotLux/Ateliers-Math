@@ -8,6 +8,7 @@ import { STORAGE_KEYS, eraseAllData, forgetChild } from '../src/engines/privacy.
 import { DEFAULT_SETTINGS, PROFILES_KEY, SEEN_KEY, loadProfiles, saveProfiles } from '../src/engines/profiles.js';
 import { createMemoryStore } from '../src/engines/storage.js';
 import { allowedVoices } from '../src/state/media.js';
+import { nativeVoiceIndex } from '../src/state/native.js';
 
 const twoChildren = (store) => {
   saveProfiles({
@@ -91,5 +92,34 @@ describe('RGPD : rien ne sort de l’appareil', () => {
     expect(headers).toMatch(/script-src 'sha256-[A-Za-z0-9+/=]+'/);
     expect(headers).not.toMatch(/connect-src|unsafe-eval|script-src[^;]*unsafe-inline/);
     expect(headers).toMatch(/frame-ancestors 'none'/);
+  });
+});
+
+describe('RGPD : application Android', () => {
+  const voices = [
+    { lang: 'en-GB', name: 'en-gb-x-gbb-local', localService: true },
+    { lang: 'fr-FR', name: 'fr-fr-x-frd-network', localService: false },
+    { lang: 'fr-CA', name: 'fr-ca-x-cab-local', localService: true },
+    { lang: 'fr-FR', name: 'fr-fr-x-frb-local', localService: true },
+  ];
+
+  it("choisit une voix locale du téléphone, dans la bonne langue", () => {
+    expect(nativeVoiceIndex(voices, 'fr', 'fr-fr', false)).toBe(3);
+    expect(nativeVoiceIndex(voices, 'en', 'en-gb', false)).toBe(0);
+  });
+
+  it('se tait plutôt que d’utiliser une voix en ligne non autorisée', () => {
+    const online = [{ lang: 'fr-FR', name: 'fr-fr-x-frd-network', localService: false }];
+    expect(nativeVoiceIndex(online, 'fr', 'fr-fr', false)).toBe(false);
+    expect(nativeVoiceIndex(online, 'fr', 'fr-fr', true)).toBe(0);
+    expect(nativeVoiceIndex([], 'fr', 'fr-fr', false)).toBeUndefined();
+  });
+
+  it("ne demande aucune permission (pas d'Internet) et ne sauvegarde rien dans le cloud", () => {
+    const manifest = readFileSync('android/app/src/main/AndroidManifest.xml', 'utf8');
+    const permissions = manifest.match(/<uses-permission[^>]*>/g) || [];
+    expect(permissions.every((p) => p.includes('tools:node="remove"'))).toBe(true);
+    expect(manifest).toMatch(/android.permission.INTERNET" tools:node="remove"/);
+    expect(manifest).toMatch(/android:allowBackup="false"/);
   });
 });

@@ -166,7 +166,7 @@ export default {
     privacy: {
       title: 'Confidentialité',
       sub: 'Ateliers Maths ne collecte aucune donnée : pas de compte, pas de publicité, pas de mesure d’audience. L’application n’envoie rien hors de cet appareil.',
-      stored: 'Ce qui est enregistré dans ce navigateur : le prénom (ou surnom), le parcours et l’univers de chaque enfant, l’état de son jardin, le niveau atteint dans chaque atelier et les réglages.',
+      stored: 'Ce qui est enregistré sur cet appareil : le prénom (ou surnom), le parcours et l’univers de chaque enfant, l’état de son jardin, le niveau atteint dans chaque atelier et les réglages.',
       host: 'Comme pour toute page web, l’hébergeur du site voit l’adresse de connexion au moment du chargement.',
       rights: '« Exporter » donne une copie de toutes ces données. Vous pouvez aussi les effacer à tout moment.',
       online: ['Voix en ligne plus naturelles', 'Utilise les voix de Microsoft ou de Google : les phrases lues, prénom compris, leur sont envoyées. Désactivé, seules les voix de l’appareil parlent.'],

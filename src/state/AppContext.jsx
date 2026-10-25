@@ -7,6 +7,7 @@ import { PATHS } from '../data/zones.js';
 import { themeFor } from '../garden-themes/index.js';
 import { setLang } from '../i18n/index.js';
 import { playSound, randomCheer, speak as speakText, stopSpeaking } from './media.js';
+import { onBackButton } from './native.js';
 
 const AppContext = createContext(null);
 
@@ -158,6 +159,19 @@ export function AppProvider({ children }) {
     setRoute({ name, ...params });
     if (typeof window !== 'undefined') window.scrollTo(0, 0);
   }, []);
+
+  // Bouton retour d'Android : retour à l'accueil ; depuis l'accueil, l'application passe en arrière-plan.
+  const routeRef = useRef(route);
+  routeRef.current = route;
+  useEffect(() => {
+    let remove = () => {};
+    onBackButton(() => {
+      if (routeRef.current.name === 'home') return false;
+      go('home');
+      return true;
+    }).then((r) => { remove = r; });
+    return () => remove();
+  }, [go]);
 
   const value = {
     profiles, child, path, addChild, selectChild, setChildPath, setChildTheme, gardenTheme,

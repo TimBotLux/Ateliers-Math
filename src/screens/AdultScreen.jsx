@@ -8,6 +8,7 @@ import { AVATAR_COLORS } from '../engines/profiles.js';
 import { t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
 import { DEFAULT_VOICE, VOICE_PRESETS, speak as speakText } from '../state/media.js';
+import { isNative } from '../state/native.js';
 import { Avatar, BackIcon, PlusIcon, SpeakerIcon } from '../components/Icons.jsx';
 import { LanguagePicker } from '../components/LanguagePicker.jsx';
 import { ChildForm } from './WelcomeScreen.jsx';
@@ -224,7 +225,8 @@ export function AdultScreen() {
           <span className="muted">{t('adult.privacy.sub')}</span>
         </div>
         <p className="muted">{t('adult.privacy.stored')}</p>
-        <p className="muted">{t('adult.privacy.host')}</p>
+        {/* Pas d'hébergeur dans l'application Android : tout est dans l'application. */}
+        {!isNative() && <p className="muted">{t('adult.privacy.host')}</p>}
         <div className="toggle-row">
           <span className="toggle-row__text"><strong>{t('adult.privacy.online')[0]}</strong><span className="muted">{t('adult.privacy.online')[1]}</span></span>
           <button

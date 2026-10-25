@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Ateliers Maths</string>
+    <string name="title_activity_main">Ateliers Maths</string>
+    <string name="package_name">lu.ateliersmaths.app</string>
+    <string name="custom_url_scheme">lu.ateliersmaths.app</string>
+</resources>

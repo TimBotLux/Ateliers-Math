@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Butterfly } from './components/Butterfly.jsx';
 import { ErrorBoundary } from './components/ErrorBoundary.jsx';
 import { GardenDefs } from './components/ZoneScene.jsx';
@@ -11,7 +12,12 @@ import { HomeScreen } from './screens/HomeScreen.jsx';
 import { WelcomeScreen } from './screens/WelcomeScreen.jsx';
 
 function Router() {
-  const { child, route, reduceMotion } = useApp();
+  const { child, route, reduceMotion, path } = useApp();
+
+  // Fond des bandes derrière les barres système (Android) : celui du parcours.
+  useEffect(() => {
+    document.documentElement.style.setProperty('--bar-bg', path.bg);
+  }, [path.bg]);
 
   let screen;
   if (!child) screen = <WelcomeScreen />;
