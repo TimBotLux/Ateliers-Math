@@ -6,7 +6,7 @@ import { loadProfiles, loadSettings, newChild, saveProfiles, saveSettings } from
 import { PATHS } from '../data/zones.js';
 import { themeFor } from '../garden-themes/index.js';
 import { setLang } from '../i18n/index.js';
-import { playSound, randomCheer, speak as speakText, stopSpeaking } from './media.js';
+import { clampVolume, playSound, randomCheer, speak as speakText, stopSpeaking } from './media.js';
 import { onBackButton } from './native.js';
 
 const AppContext = createContext(null);
@@ -110,7 +110,7 @@ export function AppProvider({ children }) {
 
   // Voix choisie dans l'Espace adulte, réglée selon l'âge du parcours.
   const speak = useCallback((text) => {
-    if (settingsRef.current.voix) speakText(text, { path: pathRef.current, voice: settingsRef.current.personnage, online: settingsRef.current.voixEnLigne });
+    if (settingsRef.current.voix) speakText(text, { path: pathRef.current, voice: settingsRef.current.personnage, online: settingsRef.current.voixEnLigne, volume: settingsRef.current.volume });
   }, []);
 
   /**
@@ -127,6 +127,15 @@ export function AppProvider({ children }) {
     c.spoken += 1;
     speak(randomCheer(c.spoken % 2 === 1 ? childName : ''));
   }, [speak, childName]);
+
+  // Volume de la voix et des sons (Espace adulte).
+  const setVolume = useCallback((volume) => {
+    setSettings((prev) => {
+      const next = { ...prev, volume: clampVolume(volume) };
+      saveSettings(next);
+      return next;
+    });
+  }, []);
 
   const setVoice = useCallback((personnage) => {
     setSettings((prev) => {
@@ -146,7 +155,7 @@ export function AppProvider({ children }) {
   }, []);
 
   const sound = useCallback((kind) => {
-    if (settingsRef.current.sons) playSound(kind);
+    if (settingsRef.current.sons) playSound(kind, settingsRef.current.volume);
   }, []);
 
   // Papillon cosmétique, parfois, lors d'une bonne réponse.
@@ -177,7 +186,7 @@ export function AppProvider({ children }) {
     profiles, child, path, addChild, selectChild, setChildPath, setChildTheme, gardenTheme,
     settings, toggleSetting, reduceMotion,
     stages, growGarden, gardenTick, adaptive: adaptiveEngine, garden: gardenEngine,
-    speak, cheer, setVoice, setLanguage, sound, butterfly, maybeButterfly,
+    speak, cheer, setVoice, setVolume, setLanguage, sound, butterfly, maybeButterfly,
     route, go,
     // Droit à l'effacement : un enfant, ou toutes les données de l'appareil.
     forgetChild: (id) => {

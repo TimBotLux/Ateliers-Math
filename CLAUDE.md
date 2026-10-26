@@ -63,7 +63,9 @@ npm run android:open  # ouvre le projet dans Android Studio (construction de l'A
 
 ## Préférences validées par l'utilisateur
 
-- Voix par défaut : « garçon » enthousiaste ; voix réglable dans l'Espace adulte.
+- Voix par défaut : « Conteuse », voix off posée et chaleureuse (inspirée d'un showreel de voix off
+  française) ; Garçon, Fille et Douce au choix dans l'Espace adulte. Fluidité : chaque texte est lu
+  d'un seul tenant (jamais découpé en phrases), hauteur ≤ `MAX_PITCH` (1,3) ; vérifié par `tests/voice.test.js`.
 - Encouragements à voix haute **toutes les 3 bonnes réponses** seulement ; le prénom **une fois
   sur deux** à l'oral, jamais dans les messages à l'écran (sauf le titre de fin).
 - Fin de séance : « Ton jardin a grandi ! » / « Ta gare s'est agrandie ! », sans nommer les compétences.

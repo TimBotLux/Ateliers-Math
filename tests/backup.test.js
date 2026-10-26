@@ -8,7 +8,7 @@ const valid = () => ({
   format: BACKUP_FORMAT,
   version: 1,
   profils: { children: [{ id: 'enfant-a1', name: 'Léa', path: '4-6', theme: 'gare', color: 2 }], activeId: 'enfant-a1' },
-  reglages: { sons: false, voix: true, anim: false, personnage: 'fille', langue: 'en', voixEnLigne: true },
+  reglages: { sons: false, voix: true, anim: false, personnage: 'fille', langue: 'en', voixEnLigne: true, volume: 0.7 },
   jardin: { version: 2, migrated: true, legacy: { present: false, owner: null }, children: { 'enfant-a1': { seed: 42, practice: { calcul: 7 } } } },
   adaptation: { 'enfant-a1': { compte: { tier: 2, wins: 1, misses: 0, last: 1700000000000 } } },
 });

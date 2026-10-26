@@ -17,24 +17,30 @@ let voicesCache = null;
  * Indice de la voix à utiliser dans la liste du téléphone.
  * undefined : liste vide (voix par défaut) ; false : aucune voix permise (on se tait).
  */
-export function nativeVoiceIndex(voices, lang, target, online) {
+export function nativeVoiceIndex(voices, lang, target, online, prefer = []) {
   if (!voices.length) return undefined;
   const indexed = voices.map((v, i) => ({ v, i })).filter(({ v }) => v.lang?.toLowerCase().replace('_', '-').startsWith(lang));
   const allowed = indexed.filter(({ v }) => online || v.localService !== false);
   if (!allowed.length) return false;
-  const exact = allowed.find(({ v }) => v.lang.toLowerCase().replace('_', '-') === target);
-  return (exact || allowed[0]).i;
+  const isTarget = ({ v }) => v.lang.toLowerCase().replace('_', '-') === target;
+  // Voix du personnage (femme ou homme), d'abord dans la langue exacte (fr-FR plutôt que fr-CA).
+  for (const pattern of prefer) {
+    const matching = allowed.filter(({ v }) => pattern.test(v.name || ''));
+    const found = matching.find(isTarget) || matching[0];
+    if (found) return found.i;
+  }
+  return (allowed.find(isTarget) || allowed[0]).i;
 }
 
 /** Lit les phrases avec le moteur vocal du téléphone. Ne lève jamais d'erreur. */
-export async function speakNative(parts, { lang, target, online }) {
+export async function speakNative(parts, { lang, target, online, prefer }) {
   try {
     await TextToSpeech.stop();
     voicesCache ??= (await TextToSpeech.getSupportedVoices()).voices || [];
-    const voice = nativeVoiceIndex(voicesCache, lang, target, online);
+    const voice = nativeVoiceIndex(voicesCache, lang, target, online, prefer);
     if (voice === false) return;
-    for (const { text, rate, pitch } of parts) {
-      TextToSpeech.speak({ text, lang: target, rate, pitch, voice, queueStrategy: ADD }).catch(() => {});
+    for (const { text, rate, pitch, volume = 1 } of parts) {
+      TextToSpeech.speak({ text, lang: target, rate, pitch, volume, voice, queueStrategy: ADD }).catch(() => {});
     }
   } catch {
     /* pas de moteur vocal : silencieux */

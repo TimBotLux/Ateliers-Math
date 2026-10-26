@@ -7,9 +7,9 @@ import { isPersistent } from '../engines/storage.js';
 import { AVATAR_COLORS } from '../engines/profiles.js';
 import { t } from '../i18n/index.js';
 import { useApp } from '../state/AppContext.jsx';
-import { DEFAULT_VOICE, VOICE_PRESETS, speak as speakText } from '../state/media.js';
+import { DEFAULT_VOICE, VOICE_PRESETS, VOLUME_MIN, VOLUME_STEP, clampVolume, playSound, speak as speakText } from '../state/media.js';
 import { isNative } from '../state/native.js';
-import { Avatar, BackIcon, PlusIcon, SpeakerIcon } from '../components/Icons.jsx';
+import { Avatar, BackIcon, MinusIcon, PlusIcon, SpeakerIcon } from '../components/Icons.jsx';
 import { LanguagePicker } from '../components/LanguagePicker.jsx';
 import { ChildForm } from './WelcomeScreen.jsx';
 
@@ -22,6 +22,42 @@ const LEVELS = {
 const levelFor = (stage) => (stage >= 3 ? 'souvent' : stage >= 1 ? 'commence' : 'decouvrir');
 
 const TOGGLES = ['sons', 'voix', 'anim'];
+
+/** Volume de la voix et des sons : curseur et boutons − / +, avec un petit son pour entendre le niveau. */
+function VolumeControl({ volume, onChange }) {
+  const [label, hint] = t('adult.volume');
+  const level = clampVolume(volume);
+  const change = (v) => {
+    const next = clampVolume(v);
+    onChange(next);
+    playSound('tap', next);
+  };
+  return (
+    <div className="volume-row">
+      <span className="toggle-row__text"><strong>{label}</strong><span className="muted">{hint}</span></span>
+      <div className="volume-row__controls">
+        <button className="icon-btn icon-btn--sm" aria-label={t('adult.volumeDown')} disabled={level <= VOLUME_MIN} onClick={() => change(level - VOLUME_STEP)}>
+          <MinusIcon />
+        </button>
+        <input
+          type="range"
+          className="volume-row__slider"
+          min={VOLUME_MIN}
+          max={1}
+          step={VOLUME_STEP}
+          value={level}
+          aria-label={label}
+          onChange={(e) => onChange(clampVolume(Number(e.target.value)))}
+          onPointerUp={(e) => playSound('tap', clampVolume(Number(e.currentTarget.value)))}
+          onKeyUp={(e) => playSound('tap', clampVolume(Number(e.currentTarget.value)))}
+        />
+        <button className="icon-btn icon-btn--sm" aria-label={t('adult.volumeUp')} disabled={level >= 1} onClick={() => change(level + VOLUME_STEP)}>
+          <PlusIcon />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 /** Effacement définitif : l'adulte doit écrire un mot, qu'un jeune enfant ne tape pas par hasard. */
 function EraseButton({ label, onErase }) {
@@ -44,7 +80,7 @@ function EraseButton({ label, onErase }) {
 }
 
 export function AdultScreen() {
-  const { profiles, child, path, selectChild, addChild, stages, settings, toggleSetting, setVoice, go, reload, forgetChild, eraseAll } = useApp();
+  const { profiles, child, path, selectChild, addChild, stages, settings, toggleSetting, setVoice, setVolume, go, reload, forgetChild, eraseAll } = useApp();
   const [adding, setAdding] = useState(false);
   const [code, setCode] = useState('');
   const [importing, setImporting] = useState(false);
@@ -158,6 +194,7 @@ export function AdultScreen() {
             </div>
           );
         })}
+        <VolumeControl volume={settings.volume} onChange={setVolume} />
         <div className="voice-picker" role="radiogroup" aria-label={t('adult.voice')}>
           <strong className="voice-picker__title">{t('adult.voice')}</strong>
           {Object.keys(VOICE_PRESETS).map((id) => {
@@ -172,7 +209,7 @@ export function AdultScreen() {
                 <button
                   className="icon-btn icon-btn--sm voice-option__listen"
                   aria-label={t('adult.voiceListen', { label })}
-                  onClick={() => speakText(t('adult.voiceTest', { name: child.name }), { path: path.id, voice: id, online: settings.voixEnLigne })}
+                  onClick={() => speakText(t('adult.voiceTest', { name: child.name }), { path: path.id, voice: id, online: settings.voixEnLigne, volume: settings.volume })}
                 >
                   <SpeakerIcon color="#1E2B2F" size={20} />
                 </button>

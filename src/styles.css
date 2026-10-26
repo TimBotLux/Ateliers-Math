@@ -471,3 +471,9 @@ h1, h2, p { margin: 0; }
 .erase-confirm { border: 2px solid #FBE1E6; border-radius: 16px; padding: 12px; }
 .error-screen { justify-content: center; text-align: center; gap: 16px; min-height: 100vh; }
 .error-screen .primary-btn { flex: none; }
+
+/* Volume (Espace adulte) */
+.volume-row { display: flex; flex-direction: column; gap: 8px; padding: 8px 0; }
+.volume-row__controls { display: flex; align-items: center; gap: 12px; }
+.volume-row__slider { flex: 1; accent-color: var(--green); height: 32px; }
+.volume-row .icon-btn:disabled { opacity: .4; }

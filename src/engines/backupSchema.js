@@ -5,7 +5,7 @@
 import { ZONE_IDS } from '../data/zones.js';
 import { THEME_IDS, DEFAULT_THEME } from '../garden-themes/index.js';
 import { LANGS } from '../i18n/index.js';
-import { VOICE_PRESETS } from '../state/media.js';
+import { VOICE_PRESETS, clampVolume } from '../state/media.js';
 import { PATH_IDS } from './activityRegistry.js';
 import { AVATAR_COLORS, DEFAULT_SETTINGS } from './profiles.js';
 
@@ -52,6 +52,7 @@ function cleanSettings(s) {
   }
   if (!(out.personnage in VOICE_PRESETS)) out.personnage = DEFAULT_SETTINGS.personnage;
   if (!LANGS[out.langue]) out.langue = DEFAULT_SETTINGS.langue;
+  out.volume = clampVolume(out.volume);
   return out;
 }
 
