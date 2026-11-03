@@ -3,6 +3,9 @@
 
 const fractionWord = { 2: ['demi', 'demis'], 3: ['tiers', 'tiers'], 4: ['quart', 'quarts'], 5: ['cinquième', 'cinquièmes'], 6: ['sixième', 'sixièmes'], 8: ['huitième', 'huitièmes'], 10: ['dixième', 'dixièmes'] };
 
+// Nom accordé au nombre (« 1 cahier », « 2 cahiers »).
+const pl = (n, word) => (n > 1 ? `${word}s` : word);
+
 export default {
   common: {
     back: 'Retour',
@@ -360,10 +363,10 @@ export default {
   },
   proportion: {
     situations: [
-      { a: 'personnes', b: 'farine (g)', text: ({ x, y, z }) => `Pour ${x} personnes, il faut ${y} g de farine. Combien de grammes pour ${z} personnes ?` },
-      { a: 'cahiers', b: 'prix (€)', text: ({ x, y, z }) => `${x} cahiers coûtent ${y} €. Combien coûtent ${z} cahiers ?` },
-      { a: 'heures', b: 'distance (km)', text: ({ x, y, z }) => `Un vélo roule ${y} km en ${x} heures. Combien de km en ${z} heures, à la même vitesse ?` },
-      { a: 'pots', b: 'surface (m²)', text: ({ x, y, z }) => `Avec ${x} pots de peinture, on peint ${y} m². Combien de m² avec ${z} pots ?` },
+      { a: 'personnes', b: 'farine (g)', text: ({ x, y, z }) => `Pour ${x} ${pl(x, 'personne')}, il faut ${y} g de farine. Combien de grammes pour ${z} ${pl(z, 'personne')} ?` },
+      { a: 'cahiers', b: 'prix (€)', text: ({ x, y, z }) => `${x} ${pl(x, 'cahier')} ${x > 1 ? 'coûtent' : 'coûte'} ${y} €. Combien ${z > 1 ? 'coûtent' : 'coûte'} ${z} ${pl(z, 'cahier')} ?` },
+      { a: 'heures', b: 'distance (km)', text: ({ x, y, z }) => `Un vélo roule ${y} km en ${x} ${pl(x, 'heure')}. Combien de km en ${z} ${pl(z, 'heure')}, à la même vitesse ?` },
+      { a: 'pots', b: 'surface (m²)', text: ({ x, y, z }) => `Avec ${x} ${pl(x, 'pot')} de peinture, on peint ${y} m². Combien de m² avec ${z} ${pl(z, 'pot')} ?` },
     ],
     hintTimes: ({ k, what }) => `Il y a ${k} fois plus de ${what} : multiplie aussi par ${k}.`,
     hintUnit: ({ z }) => `Astuce : cherche d’abord la valeur pour 1, puis pour ${z}.`,

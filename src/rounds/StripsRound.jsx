@@ -68,6 +68,8 @@ export function StripsRound({ round, onResult, onDone }) {
             return (
               <g key={b.id} className="strips__band" style={{ transform: `translate(${x}px, ${y}px)` }} onClick={() => tap(b.id)}
                 role="button" aria-label={rank >= 0 ? t('rounds.bands.remove') : t('rounds.bands.tap')}>
+                {/* Zone de toucher de toute la hauteur de la rangée (la bande dessinée est plus fine). */}
+                <rect x="0" y="-4" width={b.len * U} height={ROW} fill="transparent" />
                 <rect x="0" y="0" width={b.len * U} height={ROW - 8} rx="6" fill={b.color} stroke={extra ? '#1E2B2F' : 'none'} strokeWidth="3" strokeDasharray="6 4" />
                 {Array.from({ length: b.len - 1 }, (_, k) => (
                   <line key={k} x1={(k + 1) * U} y1="4" x2={(k + 1) * U} y2={ROW - 12} stroke="#FFFFFF" strokeWidth="1.5" opacity="0.45" />

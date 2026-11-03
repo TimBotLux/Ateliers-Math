@@ -3,6 +3,9 @@
 const fractionWord = { 2: ['half', 'halves'], 3: ['third', 'thirds'], 4: ['quarter', 'quarters'], 5: ['fifth', 'fifths'], 6: ['sixth', 'sixths'], 8: ['eighth', 'eighths'], 10: ['tenth', 'tenths'] };
 const numberWord = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen'];
 
+// Nom accordé au nombre (« 1 tin », « 2 tins »).
+const pl = (n, word) => (n > 1 ? `${word}s` : word);
+
 export default {
   common: {
     back: 'Back',
@@ -357,10 +360,10 @@ export default {
   },
   proportion: {
     situations: [
-      { a: 'people', b: 'flour (g)', text: ({ x, y, z }) => `For ${x} people, you need ${y} g of flour. How many grams for ${z} people?` },
-      { a: 'exercise books', b: 'price (£)', text: ({ x, y, z }) => `${x} exercise books cost £${y}. How much do ${z} exercise books cost?` },
-      { a: 'hours', b: 'distance (km)', text: ({ x, y, z }) => `A bike rides ${y} km in ${x} hours. How many km in ${z} hours, at the same speed?` },
-      { a: 'tins', b: 'area (m²)', text: ({ x, y, z }) => `With ${x} tins of paint, you can paint ${y} m². How many m² with ${z} tins?` },
+      { a: 'people', b: 'flour (g)', text: ({ x, y, z }) => `For ${x} ${x > 1 ? 'people' : 'person'}, you need ${y} g of flour. How many grams for ${z} ${z > 1 ? 'people' : 'person'}?` },
+      { a: 'exercise books', b: 'price (£)', text: ({ x, y, z }) => `${x} ${pl(x, 'exercise book')} ${x > 1 ? 'cost' : 'costs'} £${y}. How much ${z > 1 ? 'do' : 'does'} ${z} ${pl(z, 'exercise book')} cost?` },
+      { a: 'hours', b: 'distance (km)', text: ({ x, y, z }) => `A bike rides ${y} km in ${x} ${pl(x, 'hour')}. How many km in ${z} ${pl(z, 'hour')}, at the same speed?` },
+      { a: 'tins', b: 'area (m²)', text: ({ x, y, z }) => `With ${x} ${pl(x, 'tin')} of paint, you can paint ${y} m². How many m² with ${z} ${pl(z, 'tin')}?` },
     ],
     hintTimes: ({ k, what }) => `There are ${k} times as many ${what}: multiply by ${k} too.`,
     hintUnit: ({ z }) => `Tip: first find the value for 1, then for ${z}.`,

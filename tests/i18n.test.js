@@ -77,3 +77,19 @@ describe('Traduction français / anglais', () => {
     expect(choiceLabel('fees', '10-12')).toBe('The floating islands');
   });
 });
+
+describe('Accord au singulier dans les énoncés', () => {
+  it('écrit « 1 cahier coûte » et non « 1 cahiers coûtent », dans les deux langues', () => {
+    for (const lang of ['fr', 'en']) {
+      setLang(lang);
+      for (const sit of t('proportion.situations')) {
+        const one = sit.text({ x: 1, y: 4, z: 1 });
+        expect(one).not.toMatch(/\b1 (cahiers|personnes|heures|pots|exercise books|people|hours|tins)\b/);
+        expect(one).not.toMatch(/\bcoûtent 4\b|\bcost £4\b/);
+        expect(sit.text({ x: 2, y: 4, z: 3 })).toContain(`2 ${sit.a}`);
+      }
+    }
+    setLang('fr');
+    expect(t('proportion.situations')[1].text({ x: 1, y: 4, z: 3 })).toBe('1 cahier coûte 4 €. Combien coûtent 3 cahiers ?');
+  });
+});

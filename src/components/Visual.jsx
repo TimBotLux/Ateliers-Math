@@ -170,7 +170,7 @@ function GridShape({ w, h, cut, labels, showGrid, highlight }) {
   // Coin coupé en haut à droite pour la forme en L.
   const path = cut ? `M0 0 H${(w - cut.w) * size} V${cut.h * size} H${W} V${H} H0 Z` : `M0 0 H${W} V${H} H0 Z`;
   return (
-    <svg viewBox={`-30 -24 ${W + 60} ${H + 48}`} width={Math.min(300, W + 60)} style={{ maxWidth: '100%', height: 'auto' }} role="img" aria-label={t('visual.grid')}>
+    <svg className="visual-grid" viewBox={`-30 -24 ${W + 60} ${H + 48}`} width={Math.min(300, W + 60)} style={{ maxWidth: '100%', height: 'auto' }} role="img" aria-label={t('visual.grid')}>
       <path d={path} fill={highlight === 'aire' ? '#D9C8F0' : '#ECE4F6'} />
       {showGrid &&
         Array.from({ length: w * h }, (_, i) => {
