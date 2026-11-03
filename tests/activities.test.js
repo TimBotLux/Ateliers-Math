@@ -14,20 +14,32 @@ const EXPECTED = [
   ['droite', '10-12', 10], ['fractions', '10-12', 20], ['proportion', '10-12', 30], ['calculmalin', '10-12', 40],
   ['aires', '10-12', 50], ['angles', '10-12', 60], ['etapes', '10-12', 70], ['grandsnombres', '10-12', 80],
 ];
+// Modules du 3 novembre 2026 : Tangram, Grandeurs et mesures (ajoutés sans toucher aux 21 activités ci-dessus).
+const ADDED = [
+  ['tangram1', '4-6', 90], ['longueur1', '4-6', 100],
+  ['tangram2', '7-9', 60], ['mesure1', '7-9', 70], ['heure1', '7-9', 80], ['monnaie1', '7-9', 90],
+  ['tangram3', '10-12', 90], ['conversions', '10-12', 100],
+];
 const PATHS = ['4-6', '7-9', '10-12'];
 
 describe('activityRegistry', () => {
-  it('enregistre les 21 activités, avec leur parcours et leur ordre', () => {
-    expect(activityRegistry.all()).toHaveLength(21);
-    for (const [key, path, order] of EXPECTED) {
+  it('enregistre les 29 activités (21 existantes inchangées + 8 nouvelles), avec leur parcours et leur ordre', () => {
+    expect(activityRegistry.all()).toHaveLength(29);
+    for (const [key, path, order] of [...EXPECTED, ...ADDED]) {
       const a = activityRegistry.get(key);
       expect(a, key).toBeTruthy();
       expect(a.path).toBe(path);
       expect(a.order).toBe(order);
     }
-    expect(activityRegistry.byPath('4-6')).toHaveLength(8);
-    expect(activityRegistry.byPath('7-9')).toHaveLength(5);
-    expect(activityRegistry.byPath('10-12')).toHaveLength(8);
+    expect(activityRegistry.byPath('4-6')).toHaveLength(10);
+    expect(activityRegistry.byPath('7-9')).toHaveLength(9);
+    expect(activityRegistry.byPath('10-12')).toHaveLength(10);
+    // Les 21 activités existantes gardent leur place : les nouvelles viennent après, dans chaque parcours.
+    for (const path of PATHS) {
+      const keys = activityRegistry.byPath(path).map((a) => a.key);
+      const old = EXPECTED.filter((e) => e[1] === path).map((e) => e[0]);
+      expect(keys.slice(0, old.length)).toEqual(old);
+    }
   });
 
   it('refuse une clé en double', () => {
@@ -76,6 +88,9 @@ describe('activityRegistry', () => {
             expect(r.groups[0].count).not.toBe(r.groups[1].count);
           } else if (r.kind === 'panier') {
             expect(r.target).toBeGreaterThanOrEqual(1);
+          } else if (['tangram', 'bandes', 'regle', 'horloge', 'monnaie'].includes(r.kind)) {
+            // Nouvelles manches : vérifiées en détail dans tangram.test.js et mesures.test.js.
+            expect(r.instruction, a.key).toBeTruthy();
           } else {
             expect(r.kind).toBe('balance');
           }

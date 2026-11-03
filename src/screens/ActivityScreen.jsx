@@ -12,6 +12,11 @@ import { ChoiceRound } from '../rounds/ChoiceRound.jsx';
 import { CompareRound } from '../rounds/CompareRound.jsx';
 import { KeypadRound } from '../rounds/KeypadRound.jsx';
 import { NumberLineRound } from '../rounds/NumberLineRound.jsx';
+import { ClockRound } from '../rounds/ClockRound.jsx';
+import { CoinsRound } from '../rounds/CoinsRound.jsx';
+import { RulerRound } from '../rounds/RulerRound.jsx';
+import { StripsRound } from '../rounds/StripsRound.jsx';
+import { TangramRound } from '../rounds/TangramRound.jsx';
 
 const ROUND_COMPONENTS = {
   balance: BalanceRound,
@@ -20,14 +25,21 @@ const ROUND_COMPONENTS = {
   clavier: KeypadRound,
   panier: BasketRound,
   droite: NumberLineRound,
+  tangram: TangramRound,
+  bandes: StripsRound,
+  regle: RulerRound,
+  horloge: ClockRound,
+  monnaie: CoinsRound,
 };
 
 export function ActivityScreen({ activityKey, mission, from = 'home' }) {
-  const { child, adaptive, growGarden, speak, sound, maybeButterfly, go, path } = useApp();
+  const { child, adaptive, growGarden, speak, sound, maybeButterfly, go, path, gardenTheme } = useApp();
   const def = activityRegistry.get(activityKey);
   const rng = useMemo(() => Math.random, []);
+  // Contexte transmis aux générateurs : l’univers du jardin (silhouettes du tangram propres à chaque univers).
+  const ctx = useMemo(() => ({ theme: gardenTheme?.id }), [gardenTheme?.id]);
   const [index, setIndex] = useState(0);
-  const [round, setRound] = useState(() => def.create(adaptive.tier(child.id, def.key, def.tiers), rng));
+  const [round, setRound] = useState(() => def.create(adaptive.tier(child.id, def.key, def.tiers), rng, ctx));
   const grown = useRef(new Set(mission?.grown || []));
 
   const instruction = round.instruction;
@@ -52,7 +64,7 @@ export function ActivityScreen({ activityKey, mission, from = 'home' }) {
 
   const onDone = useCallback(() => {
     if (index + 1 < def.rounds) {
-      setRound(def.create(adaptive.tier(child.id, def.key, def.tiers), rng));
+      setRound(def.create(adaptive.tier(child.id, def.key, def.tiers), rng, ctx));
       setIndex((i) => i + 1);
       return;
     }
@@ -70,7 +82,7 @@ export function ActivityScreen({ activityKey, mission, from = 'home' }) {
       const next = mission ? null : siblings[(siblings.findIndex((a) => a.key === def.key) + 1) % siblings.length]?.key;
       go('fin', { grown: zones, mode: mission ? 'mission' : 'atelier', from, next });
     }
-  }, [index, def, adaptive, child.id, rng, mission, go, from, sound]);
+  }, [index, def, adaptive, child.id, rng, ctx, mission, go, from, sound]);
 
   const Round = ROUND_COMPONENTS[round.kind];
 

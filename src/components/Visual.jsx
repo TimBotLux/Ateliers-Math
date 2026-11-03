@@ -2,6 +2,7 @@
 
 import { mulberry32, shuffle } from '../engines/random.js';
 import { t } from '../i18n/index.js';
+import { ClockFace, ConvTable } from './MeasureVisuals.jsx';
 
 const DICE = {
   1: [[1, 1]],
@@ -232,6 +233,10 @@ function PlaceValue({ text, highlight }) {
 export function Visual({ v }) {
   if (!v) return null;
   switch (v.type) {
+    case 'clock':
+      return <ClockFace h={v.h} m={v.m} />;
+    case 'convTable':
+      return <ConvTable {...v} />;
     case 'fractionBars':
       return <FractionBars items={v.items} />;
     case 'angle':

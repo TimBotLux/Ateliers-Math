@@ -41,12 +41,16 @@ npm run android:open  # ouvre le projet dans Android Studio (construction de l'A
   `sessionEngine` (Ma Mission ; option `recency` = révisions espacées, utilisée en 10-12),
   `gardenEngine` (8 zones × 6 stades, clé `gardenEngineV2`, ancien compteur `jardinMathsTotal`
   en lecture seule), `balanceEngine`, `profiles`, `backup` (+ `backupSchema` : nettoyage de tout import),
-  `privacy` (effacement d'un enfant ou de tout l'appareil), `storage` (repli mémoire).
+  `privacy` (effacement d'un enfant ou de tout l'appareil), `storage` (repli mémoire),
+  `tangramEngine` (pièces, quarts de tour et retournement, recouvrement en petits triangles, aides).
   `components/ErrorBoundary.jsx` : écran de repli qui répare les données enregistrées puis recharge.
-- `activities/` : `index.js` (4-6 et 7-9), `path1012.js` (10-12), `balanceLevels.js` (poids1).
+- `activities/` : `index.js` (4-6 et 7-9), `path1012.js` (10-12), `balanceLevels.js` (poids1),
+  `tangram.js` (tangram1-3, silhouettes données par une solution de référence), `mesures.js`
+  (longueur1, mesure1, heure1, monnaie1, conversions ; montants en centimes, conversions en entiers).
   Une activité = clé, parcours, ordre, compétences (zones), interaction, générateur de manches.
 - `rounds/` : un composant par type d'interaction (`balance`, `choix`, `comparaison`, `clavier`,
-  `panier`, `droite`). Contrat : `onResult(succès au premier essai)` puis `onDone()`.
+  `panier`, `droite`, `tangram`, `bandes`, `regle`, `horloge`, `monnaie`). Contrat : `onResult(succès au
+  premier essai)` puis `onDone()`. Les générateurs reçoivent `create(palier, rng, { theme })`.
 - `garden-themes/` : 2 univers (`fees`, `gare`) × 3 styles d'âge, un fichier par combinaison
   (`fees46`, `fees79`, `fees1012`, `gare46`…). Zone = `{ sub, stages[6], stickers[{from,to?,svg}] }`,
   fragments SVG 200×170. Helpers communs dans `common.js` (S = autocollant 4-6, F = ombre plate,

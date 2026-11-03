@@ -8,6 +8,8 @@ import { createBalanceRound } from '../engines/balanceEngine.js';
 import { numberChoices, pick, randInt, shuffle } from '../engines/random.js';
 import { POIDS1 } from './balanceLevels.js';
 import { PATH_1012_ACTIVITIES } from './path1012.js';
+import { TANGRAM_ACTIVITIES } from './tangram.js';
+import { MESURES_ACTIVITIES } from './mesures.js';
 
 const OBJECTS = ['🍎', '⭐', '🐟', '🌸', '🚗', '🎈', '🐞', '🍓', '🦋', '🐥'];
 const FRUITS = ['🍎', '🍐', '🍊', '🍓', '🍋', '🍑'];
@@ -289,6 +291,9 @@ export const ALL_ACTIVITIES = [
   subitizing, compte, compare, formes, calculsimple, panier, suite, poids1,
   addition, soustraction, multiplication, problemes, calculmental,
   ...PATH_1012_ACTIVITIES,
+  // Modules ajoutés le 3 novembre 2026 (PRD) : Tangram, Grandeurs et mesures.
+  ...TANGRAM_ACTIVITIES,
+  ...MESURES_ACTIVITIES,
 ];
 
 export function buildRegistry() {

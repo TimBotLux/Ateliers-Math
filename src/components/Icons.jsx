@@ -87,3 +87,12 @@ export const Avatar = ({ fg = '#E8892F', size = 30 }) => (
     <circle cx="15" cy="11" r="6" fill={fg} /><path d="M5 27c1.5-6 5.5-9 10-9s8.5 3 10 9" fill={fg} />
   </svg>
 );
+
+// Tangram : tourner d'un quart de tour, retourner (miroir).
+export const RotateIcon = ({ color = '#1E2B2F', size = 26 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...stroke(color)} aria-hidden="true"><path d="M19 12a7 7 0 1 1-2.05-4.95" /><path d="M19 4v4h-4" /></svg>
+);
+
+export const FlipIcon = ({ color = '#1E2B2F', size = 26 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...stroke(color)} aria-hidden="true"><path d="M12 3v18" strokeDasharray="2 3" /><path d="M9 7L3 17h6z" /><path d="M15 7l6 10h-6z" /></svg>
+);

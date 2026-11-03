@@ -73,6 +73,31 @@ const ICONS = {
   grandsnombres: (
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#2F6FB0" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><rect x="3" y="12" width="9" height="16" rx="2" /><rect x="15.5" y="12" width="9" height="16" rx="2" fill="#DCE9F6" /><rect x="28" y="12" width="9" height="16" rx="2" /><path d="M20 6v3M20 31v3" /></svg>
   ),
+  // Modules Tangram et Grandeurs et mesures.
+  tangram1: (
+    <svg width="54" height="54" viewBox="0 0 40 40" aria-hidden="true"><path d="M4 4h32L20 20z" fill="#2F6FB0" /><path d="M4 4v32l16-16z" fill="#E8892F" /><path d="M36 4v16l-8-8z" fill="#D9617A" /><path d="M20 20l8-8 8 8-8 8z" fill="#F2B84B" /><path d="M4 36l8-8h16l-8 8z" fill="#3FA7A3" /><path d="M20 36l16-16v16z" fill="#2E7D5B" /><path d="M12 28l8-8 8 8z" fill="#7A4FB5" /></svg>
+  ),
+  tangram2: (
+    <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M4 4h32L20 20z" fill="#2F6FB0" /><path d="M4 4v32l16-16z" fill="#E8892F" /><path d="M36 4v16l-8-8z" fill="#D9617A" /><path d="M20 20l8-8 8 8-8 8z" fill="#F2B84B" /><path d="M4 36l8-8h16l-8 8z" fill="#3FA7A3" /><path d="M20 36l16-16v16z" fill="#2E7D5B" /><path d="M12 28l8-8 8 8z" fill="#7A4FB5" /></svg>
+  ),
+  tangram3: (
+    <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M4 4h32L20 20z" fill="#2F6FB0" /><path d="M4 4v32l16-16z" fill="#E8892F" /><path d="M36 4v16l-8-8z" fill="#D9617A" /><path d="M20 20l8-8 8 8-8 8z" fill="#F2B84B" /><path d="M4 36l8-8h16l-8 8z" fill="#3FA7A3" /><path d="M20 36l16-16v16z" fill="#2E7D5B" /><path d="M12 28l8-8 8 8z" fill="#7A4FB5" /></svg>
+  ),
+  longueur1: (
+    <svg width="54" height="54" viewBox="0 0 54 54" aria-hidden="true"><path d="M8 6v42" stroke="#1E2B2F" strokeWidth="3" strokeLinecap="round" /><rect x="10" y="10" width="14" height="8" rx="3" fill="#D9617A" /><rect x="10" y="23" width="25" height="8" rx="3" fill="#E8892F" /><rect x="10" y="36" width="36" height="8" rx="3" fill="#2F6FB0" /></svg>
+  ),
+  mesure1: (
+    <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="6" y="8" width="26" height="7" rx="2" fill="#F2B84B" /><path d="M32 8l6 3.5-6 3.5z" fill="#B85E14" /><rect x="3" y="20" width="34" height="13" rx="2" fill="#FDF3DC" stroke="#8A6408" strokeWidth="2" /><path d="M8 20v6M14 20v4M20 20v6M26 20v4M32 20v6" stroke="#8A6408" strokeWidth="1.8" /></svg>
+  ),
+  heure1: (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" strokeLinecap="round" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#FFFFFF" stroke="#1E2B2F" strokeWidth="3" /><path d="M20 20V10" stroke="#2F6FB0" strokeWidth="3" /><path d="M20 20l7 4" stroke="#1E2B2F" strokeWidth="3.5" /></svg>
+  ),
+  monnaie1: (
+    <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="6" width="26" height="16" rx="3" fill="#BFD8EA" stroke="#2F6FB0" strokeWidth="2" /><circle cx="26" cy="27" r="10" fill="#C9CDD0" stroke="#7A8287" strokeWidth="2" /><circle cx="26" cy="27" r="6" fill="#E2B84C" /><circle cx="11" cy="31" r="6" fill="#E2B84C" stroke="#9C7A16" strokeWidth="2" /></svg>
+  ),
+  conversions: (
+    <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="8" width="34" height="24" rx="3" fill="#FFFFFF" stroke="#3D2A5C" strokeWidth="2" /><path d="M14.3 8v24M25.6 8v24M3 16h34" stroke="#3D2A5C" strokeWidth="1.6" /><rect x="26.6" y="9" width="9.4" height="6" fill="#F2B84B" /><path d="M8 24h22m-4-3l4 3-4 3" fill="none" stroke="#7A4FB5" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+  ),
 };
 
 export const ACTIVITY_TINTS = {
@@ -81,6 +106,8 @@ export const ACTIVITY_TINTS = {
   subitizing: '#FDEEDD', compte: '#E3EEF8', compare: '#FBE7EB', formes: '#FDF3DC',
   calculsimple: '#F1E8F6', panier: '#E3F0E7', suite: '#E3EEF8', poids1: '#FCE3CC',
   addition: '#E3EEF8', soustraction: '#FBE7EB', multiplication: '#FDF3DC', problemes: '#E3F0E7', calculmental: '#F1E8F6',
+  tangram1: '#E3EEF8', tangram2: '#E3EEF8', tangram3: '#ECE4F6', longueur1: '#FBE7EB',
+  mesure1: '#FDF3DC', heure1: '#E3EEF8', monnaie1: '#FDF3DC', conversions: '#ECE4F6',
 };
 
 export const ActivityIcon = ({ activityKey }) => ICONS[activityKey] || null;

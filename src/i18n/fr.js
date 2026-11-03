@@ -220,6 +220,49 @@ export default {
       arrow: 'La flèche verte montre le bon endroit.',
       speakWrong: 'Regarde où se trouve vraiment le nombre.',
     },
+    tangram: {
+      board: ({ name }) => `La forme à remplir : ${name}`,
+      tray: 'Les pièces à poser',
+      pickPiece: 'Touche une pièce.',
+      tapBoard: 'Touche l’endroit où la poser.',
+      rotate: 'Tourner la pièce',
+      flip: 'Retourner la pièce',
+      done: 'J’ai fini',
+      hintShown: 'Regarde le contour en pointillés.',
+      areaQuestion: 'Ces deux formes ont-elles la même aire ?',
+      areaHint: 'Regarde les pièces de chaque forme.',
+      oui: 'Oui', non: 'Non', inconnu: 'On ne peut pas savoir',
+    },
+    bands: {
+      start: 'La ligne de départ',
+      tray: 'Les bandes à ranger',
+      tap: 'Touche la bande la plus courte.',
+      tapNext: 'Touche la bande suivante.',
+      remove: 'Reprendre cette bande',
+      observe: 'Les bandes doivent monter comme un escalier.',
+    },
+    ruler: {
+      aria: ({ what }) => `${what} posé contre une règle`,
+      count: 'Compte les centimètres sous l’objet.',
+    },
+    clock: {
+      aria: 'Une horloge à aiguilles',
+      drag: 'Fais tourner la grande aiguille avec le doigt.',
+      hourMinus: 'Une heure de moins', hourPlus: 'Une heure de plus',
+      minMinus: 'Cinq minutes de moins', minPlus: 'Cinq minutes de plus',
+      asked: 'Demandé', yours: 'Ton horloge',
+      hourUnit: 'h', minUnit: 'min',
+      observe: 'Compare les deux heures.',
+      shown: 'Regarde : les aiguilles montrent la bonne heure.',
+    },
+    coins: {
+      price: 'Prix', paid: 'Payé', change: 'Monnaie à rendre',
+      tray: 'Les pièces et les billets',
+      add: ({ v }) => `Ajouter ${v}`, remove: ({ v }) => `Enlever ${v}`,
+      done: 'J’ai fini',
+      gauge: 'Ce que tu as posé, comparé au montant',
+      observe: 'Compare les deux barres.',
+    },
   },
 
   visual: {
@@ -231,6 +274,8 @@ export default {
     angle: 'Un angle',
     grid: 'Une figure sur un quadrillage',
     together: ({ total }) => `Ensemble : ${total}`,
+    clock: 'Une horloge',
+    convTable: 'Un tableau de conversion',
   },
 
   balance: {
@@ -288,6 +333,14 @@ export default {
       round: ({ to }) => `Arrondis ce nombre ${to}.`,
       to: { 1000: 'au millier près', 10000: 'à la dizaine de mille près', 100000: 'à la centaine de mille près' },
     },
+    tangram1: { label: 'Je construis', subtitle: '', instruction: 'Remplis la forme avec les pièces.' },
+    tangram2: { label: 'Je construis', subtitle: 'Le tangram : je reconstruis une forme', instruction: 'Reconstruis la forme avec les pièces.' },
+    tangram3: { label: 'Je construis', subtitle: 'Les 7 pièces du tangram, et leur aire', instruction: 'Reconstruis la forme avec les pièces.' },
+    longueur1: { label: 'Je range', subtitle: '', instruction: 'Range les bandes, de la plus courte à la plus longue.' },
+    mesure1: { label: 'Je mesure', subtitle: 'Je lis une règle graduée', instruction: ({ what }) => `Combien mesure ${what} ?` },
+    heure1: { label: 'Je lis l’heure', subtitle: 'L’horloge à aiguilles', read: 'Quelle heure est-il ?', set: 'Règle l’horloge sur cette heure.' },
+    monnaie1: { label: 'Je paie', subtitle: 'Pièces, billets et monnaie', pay: 'Paie le prix exact.', change: 'Rends la monnaie.' },
+    conversions: { label: 'Je convertis', subtitle: 'Longueurs, masses, contenances, durées', instruction: 'Convertis dans l’autre unité.' },
   },
 
   // Textes des énoncés (7-9 et 10-12).
@@ -338,5 +391,45 @@ export default {
     clock: ({ h, m }) => `${h} h ${m}`,
     hintBars: 'Astuce : dessine le problème avec des barres, comme ci-dessus.',
     hintClock: 'Astuce : compte d’abord jusqu’à l’heure pile, puis ajoute les minutes.',
+  },
+
+  // Module Tangram « Je construis ».
+  tangram: {
+    speakName: ({ name }) => `C’est ${name}.`,
+    names: {
+      cerfvolant: 'un cerf-volant', voile: 'une voile', bateau: 'un bateau', poisson: 'un poisson',
+      papillon: 'un papillon', wagonnet: 'un wagonnet', fleche: 'une flèche', voilier: 'un voilier',
+      champignon: 'un champignon', wagon: 'un wagon', maison: 'une maison', oiseau: 'un oiseau',
+      citerne: 'un wagon-citerne', carre: 'un carré', chat: 'un chat', fusee: 'une fusée',
+      lanterne: 'une lanterne', locomotive: 'une locomotive', horloge: 'une horloge de quai',
+    },
+    pieces: { L: 'Grand triangle', M: 'Triangle moyen', S: 'Petit triangle', Q: 'Carré', P: 'Parallélogramme' },
+  },
+
+  // Module Grandeurs et mesures.
+  measures: {
+    cm: ({ v }) => `${v} cm`,
+    objects: { crayon: 'le crayon', gomme: 'la gomme', feuille: 'la feuille', pinceau: 'le pinceau' },
+    // Heure sur 24 heures : « 14 h 30 », « 9 h ».
+    clockTime: ({ h, m }) => (m === 0 ? `${h} h` : `${h} h ${String(m).padStart(2, '0')}`),
+    // Montants en centimes : « 3 € », « 3,70 € ».
+    money: ({ c }) => (c % 100 === 0 ? `${c / 100} €` : `${Math.floor(c / 100)},${String(c % 100).padStart(2, '0')} €`),
+    coin: ({ c }) => (c < 100 ? `${c} c` : `${c / 100} €`),
+    units: {
+      km: 'km', hm: 'hm', dam: 'dam', m: 'm', dm: 'dm', cm: 'cm', mm: 'mm',
+      kg: 'kg', hg: 'hg', dag: 'dag', g: 'g', dg: 'dg', cg: 'cg', mg: 'mg',
+      hL: 'hL', daL: 'daL', L: 'L', dL: 'dL', cL: 'cL', mL: 'mL',
+    },
+    convert: ({ v, from, to }) => `${v} ${from} = combien de ${to} ?`,
+    hToMin: ({ h }) => `${h} h = combien de minutes ?`,
+    minToSec: ({ m }) => `${m} min = combien de secondes ?`,
+    hMinToMin: ({ h, m }) => `${h} h ${m} min = combien de minutes ?`,
+    minSecToSec: ({ m, s }) => `${m} min ${s} s = combien de secondes ?`,
+    half: ({ h }) => `${h} h et demie = combien de minutes ?`,
+    quarter: ({ h }) => `${h} h et quart = combien de minutes ?`,
+    threeQuarters: ({ h }) => `${h} h trois quarts = combien de minutes ?`,
+    hintTable: 'Astuce : place le chiffre des unités sous l’unité de départ, puis lis sous la nouvelle unité.',
+    hintHour: 'Astuce : 1 heure = 60 minutes.',
+    hintMinute: 'Astuce : 1 minute = 60 secondes.',
   },
 };

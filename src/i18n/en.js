@@ -219,6 +219,49 @@ export default {
       arrow: 'The green arrow shows the right place.',
       speakWrong: 'Look where the number really is.',
     },
+    tangram: {
+      board: ({ name }) => `The shape to fill: ${name}`,
+      tray: 'Pieces to place',
+      pickPiece: 'Tap a piece.',
+      tapBoard: 'Tap where to put it.',
+      rotate: 'Turn the piece',
+      flip: 'Flip the piece over',
+      done: 'I’ve finished',
+      hintShown: 'Look at the dotted outline.',
+      areaQuestion: 'Do these two shapes have the same area?',
+      areaHint: 'Look at the pieces in each shape.',
+      oui: 'Yes', non: 'No', inconnu: 'We can’t tell',
+    },
+    bands: {
+      start: 'The starting line',
+      tray: 'Strips to sort',
+      tap: 'Tap the shortest strip.',
+      tapNext: 'Tap the next strip.',
+      remove: 'Take this strip back',
+      observe: 'The strips should go up like a staircase.',
+    },
+    ruler: {
+      aria: ({ what }) => `${what} against a ruler`,
+      count: 'Count the centimetres under the object.',
+    },
+    clock: {
+      aria: 'A clock with hands',
+      drag: 'Turn the long hand with your finger.',
+      hourMinus: 'One hour back', hourPlus: 'One hour on',
+      minMinus: 'Five minutes back', minPlus: 'Five minutes on',
+      asked: 'Asked', yours: 'Your clock',
+      hourUnit: 'h', minUnit: 'min',
+      observe: 'Compare the two times.',
+      shown: 'Look: the hands show the right time.',
+    },
+    coins: {
+      price: 'Price', paid: 'Paid', change: 'Change to give',
+      tray: 'Coins and notes',
+      add: ({ v }) => `Add ${v}`, remove: ({ v }) => `Take away ${v}`,
+      done: 'I’ve finished',
+      gauge: 'What you have put down, compared with the amount',
+      observe: 'Compare the two bars.',
+    },
   },
 
   visual: {
@@ -230,6 +273,8 @@ export default {
     angle: 'An angle',
     grid: 'A shape on a grid',
     together: ({ total }) => `Together: ${total}`,
+    clock: 'A clock',
+    convTable: 'A conversion table',
   },
 
   balance: {
@@ -286,6 +331,14 @@ export default {
       round: ({ to }) => `Round this number ${to}.`,
       to: { 1000: 'to the nearest thousand', 10000: 'to the nearest ten thousand', 100000: 'to the nearest hundred thousand' },
     },
+    tangram1: { label: 'I build', subtitle: '', instruction: 'Fill the shape with the pieces.' },
+    tangram2: { label: 'I build', subtitle: 'Tangram: I rebuild a shape', instruction: 'Rebuild the shape with the pieces.' },
+    tangram3: { label: 'I build', subtitle: 'The 7 tangram pieces, and their area', instruction: 'Rebuild the shape with the pieces.' },
+    longueur1: { label: 'I sort', subtitle: '', instruction: 'Sort the strips from shortest to longest.' },
+    mesure1: { label: 'I measure', subtitle: 'I read a ruler', instruction: ({ what }) => `How long is ${what}?` },
+    heure1: { label: 'I tell the time', subtitle: 'A clock with hands', read: 'What time is it?', set: 'Set the clock to this time.' },
+    monnaie1: { label: 'I pay', subtitle: 'Coins, notes and change', pay: 'Pay the exact price.', change: 'Give the change.' },
+    conversions: { label: 'I convert', subtitle: 'Lengths, masses, capacities, times', instruction: 'Convert into the other unit.' },
   },
 
   speech: {
@@ -335,5 +388,53 @@ export default {
     clock: ({ h, m }) => `${h}:${m}`,
     hintBars: 'Tip: draw the problem with bars, like the one above.',
     hintClock: 'Tip: count up to the next o’clock first, then add the minutes.',
+  },
+
+  // Tangram module "I build".
+  tangram: {
+    speakName: ({ name }) => `It’s ${name}.`,
+    names: {
+      cerfvolant: 'a kite', voile: 'a sail', bateau: 'a boat', poisson: 'a fish',
+      papillon: 'a butterfly', wagonnet: 'a mine cart', fleche: 'an arrow', voilier: 'a sailing boat',
+      champignon: 'a mushroom', wagon: 'a carriage', maison: 'a house', oiseau: 'a bird',
+      citerne: 'a tank wagon', carre: 'a square', chat: 'a cat', fusee: 'a rocket',
+      lanterne: 'a lantern', locomotive: 'a locomotive', horloge: 'a platform clock',
+    },
+    pieces: { L: 'Large triangle', M: 'Medium triangle', S: 'Small triangle', Q: 'Square', P: 'Parallelogram' },
+  },
+
+  // Measures module.
+  measures: {
+    cm: ({ v }) => `${v} cm`,
+    objects: { crayon: 'the pencil', gomme: 'the rubber', feuille: 'the leaf', pinceau: 'the paintbrush' },
+    // British wording on a 12-hour clock: "half past two", "twenty to nine".
+    clockTime: ({ h, m }) => {
+      const hour = (x) => numberWord[(x % 12) || 12];
+      const minutes = { 5: 'five', 10: 'ten', 20: 'twenty', 25: 'twenty-five' };
+      if (m === 0) return `${hour(h)} o’clock`;
+      if (m === 15) return `quarter past ${hour(h)}`;
+      if (m === 30) return `half past ${hour(h)}`;
+      if (m === 45) return `quarter to ${hour(h + 1)}`;
+      return m < 30 ? `${minutes[m]} past ${hour(h)}` : `${minutes[60 - m]} to ${hour(h + 1)}`;
+    },
+    // Amounts in pence: "70p", "£3", "£3.70".
+    money: ({ c }) => (c < 100 ? `${c}p` : c % 100 === 0 ? `£${c / 100}` : `£${Math.floor(c / 100)}.${String(c % 100).padStart(2, '0')}`),
+    coin: ({ c }) => (c < 100 ? `${c}p` : `£${c / 100}`),
+    units: {
+      km: 'km', hm: 'hm', dam: 'dam', m: 'm', dm: 'dm', cm: 'cm', mm: 'mm',
+      kg: 'kg', hg: 'hg', dag: 'dag', g: 'g', dg: 'dg', cg: 'cg', mg: 'mg',
+      hL: 'hl', daL: 'dal', L: 'l', dL: 'dl', cL: 'cl', mL: 'ml',
+    },
+    convert: ({ v, from, to }) => `${v} ${from} = how many ${to}?`,
+    hToMin: ({ h }) => `${h} h = how many minutes?`,
+    minToSec: ({ m }) => `${m} min = how many seconds?`,
+    hMinToMin: ({ h, m }) => `${h} h ${m} min = how many minutes?`,
+    minSecToSec: ({ m, s }) => `${m} min ${s} s = how many seconds?`,
+    half: ({ h }) => `${h} and a half hours = how many minutes?`,
+    quarter: ({ h }) => `${h} and a quarter hours = how many minutes?`,
+    threeQuarters: ({ h }) => `${h} and three-quarter hours = how many minutes?`,
+    hintTable: 'Tip: put the units digit under the starting unit, then read under the new unit.',
+    hintHour: 'Tip: 1 hour = 60 minutes.',
+    hintMinute: 'Tip: 1 minute = 60 seconds.',
   },
 };
